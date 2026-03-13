@@ -74,11 +74,10 @@ export default function Home() {
             <div className="space-y-3">
               <p className="eyebrow">PromptPal</p>
               <h1 className="display-title max-w-3xl text-4xl font-semibold tracking-[-0.05em] text-slate-900 sm:text-5xl lg:text-[4.3rem] lg:leading-[0.95]">
-                Build a sharper brief for your AI coding agent.
+                Your PromptPal.
               </h1>
               <p className="max-w-xl text-base leading-7 text-slate-600 sm:text-lg">
-                Turn rough product ideas into an agent-ready build brief with the
-                right level of guidance, clarity, and implementation detail.
+                Because your idea deserves more than a bad prompt.
               </p>
             </div>
           </div>
