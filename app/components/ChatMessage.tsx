@@ -5,6 +5,7 @@ import { Bot, User } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Button } from "@/components/ui/button";
+import { stripHiddenBlocks } from "@/lib/prompt-state";
 import { cn } from "@/lib/utils";
 
 interface ChatMessageProps {
@@ -15,15 +16,6 @@ interface ChatMessageProps {
   onOpenPrompt?: () => void;
 }
 
-function stripPromptState(content: string): string {
-  return content
-    .replace(/<!-- PROMPT_STATE -->[\s\S]*?<!-- \/PROMPT_STATE -->/g, "")
-    .replace(/<!-- SESSION_STATE -->[\s\S]*?<!-- \/SESSION_STATE -->/g, "")
-    .replace(/<!-- PROMPT_STATE -->[\s\S]*$/g, "")
-    .replace(/<!-- SESSION_STATE -->[\s\S]*$/g, "")
-    .trim();
-}
-
 export default function ChatMessage({
   role,
   content,
@@ -31,7 +23,7 @@ export default function ChatMessage({
   promptPreview,
   onOpenPrompt,
 }: ChatMessageProps) {
-  const displayContent = role === "assistant" ? stripPromptState(content) : content;
+  const displayContent = role === "assistant" ? stripHiddenBlocks(content) : content;
   const hasPromptPreview = role === "assistant" && Boolean(promptPreview?.trim());
 
   if (!displayContent && role === "assistant") {

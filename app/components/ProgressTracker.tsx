@@ -29,8 +29,13 @@ export default function ProgressTracker({
   totalQuestions,
   phase,
 }: ProgressTrackerProps) {
-  const boundedQuestion = Math.min(Math.max(currentQuestion, 1), Math.max(totalQuestions, 1));
-  const progress = Math.min(100, (boundedQuestion / Math.max(totalQuestions, 1)) * 100);
+  const hasStarted = currentQuestion > 0;
+  const boundedQuestion = hasStarted
+    ? Math.min(Math.max(currentQuestion, 1), Math.max(totalQuestions, 1))
+    : 0;
+  const progress = hasStarted
+    ? Math.min(100, (boundedQuestion / Math.max(totalQuestions, 1)) * 100)
+    : 0;
   const segments = buildSegments(totalQuestions);
 
   return (
@@ -41,11 +46,11 @@ export default function ProgressTracker({
             Progress
           </p>
           <h3 className="mt-2 text-lg font-semibold tracking-tight text-slate-900">
-            Interview depth
+            Prompt shaping
           </h3>
         </div>
         <div className="rounded-full border border-slate-900/[0.08] bg-[#fbf7f1] px-3 py-1 text-xs font-semibold text-slate-700">
-          Q{boundedQuestion}/{totalQuestions}
+          {hasStarted ? `Q${boundedQuestion}/${totalQuestions}` : "Ready to start"}
         </div>
       </div>
 
@@ -56,12 +61,24 @@ export default function ProgressTracker({
         />
       </div>
 
+      {!hasStarted && (
+        <div className="mt-4 rounded-[1rem] border border-dashed border-slate-900/[0.12] bg-[#fbf7f1] px-3 py-3">
+          <p className="text-sm font-semibold tracking-tight text-slate-900">
+            Intake first
+          </p>
+          <p className="mt-1 text-xs leading-5 text-slate-600">
+            Share the rough idea. PromptPal will turn it into question one,
+            suggest the setup, and keep the live draft moving.
+          </p>
+        </div>
+      )}
+
       <div className="mt-4 space-y-2.5">
         {segments.map((segment) => {
           const isActive =
-            phase === segment.id ||
+            (hasStarted && phase === segment.id) ||
             (boundedQuestion >= segment.start && boundedQuestion <= segment.end);
-          const isComplete = boundedQuestion > segment.end;
+          const isComplete = hasStarted && boundedQuestion > segment.end;
 
           return (
             <div
@@ -98,13 +115,13 @@ export default function ProgressTracker({
         <div
           className={cn(
             "flex items-center gap-3 rounded-[1rem] px-3 py-3",
-            phase === "finalizing" && "bg-[#f6efe4]"
+            hasStarted && phase === "finalizing" && "bg-[#f6efe4]"
           )}
         >
           <div
             className={cn(
               "flex size-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold",
-              phase === "finalizing"
+              hasStarted && phase === "finalizing"
                 ? "bg-slate-900 text-white"
                 : "border border-slate-900/10 bg-white text-slate-500"
             )}

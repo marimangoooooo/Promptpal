@@ -112,11 +112,11 @@ export default function PromptPanel({
         ) : (
           <div className="flex h-full min-h-[220px] flex-col items-center justify-center rounded-[1.2rem] border border-dashed border-slate-900/[0.12] bg-[#fbf7f1] px-6 py-8 text-center">
             <p className="text-base font-semibold tracking-tight text-slate-900">
-              The draft will appear here as the interview progresses.
+              The draft appears as soon as your idea lands.
             </p>
             <p className="mt-2 max-w-sm text-sm leading-6 text-slate-600">
-              Answer the guided questions and PromptPal will keep refining the
-              working brief in the background.
+              Share the rough concept, then PromptPal will keep refining the
+              working brief while it asks follow-up questions.
             </p>
           </div>
         )}
