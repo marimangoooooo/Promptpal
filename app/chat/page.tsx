@@ -15,6 +15,7 @@ import {
   X,
 } from "lucide-react";
 import ChatMessage from "../components/ChatMessage";
+import PromptModal from "../components/PromptModal";
 import ProgressTracker from "../components/ProgressTracker";
 import PromptPanel from "../components/PromptPanel";
 import { TOOLS } from "../components/ToolSelector";
@@ -115,6 +116,24 @@ function detectQuestionNumber(
   return 1;
 }
 
+function hasFinalPromptSignal(text: string): boolean {
+  const normalized = text.toLowerCase();
+
+  return [
+    "prompt is ready",
+    "your prompt is ready",
+    "your prompt is now ready",
+    "copy the full prompt",
+    "open the full prompt",
+    "see full prompt",
+    "show full prompt",
+    "review the live preview",
+    "optimized prompt",
+    "full prompt below",
+    "prompt preview",
+  ].some((phrase) => normalized.includes(phrase));
+}
+
 function extractSessionState(
   messages: Array<{ role: string; parts: Array<{ type: string; text?: string }> }>
 ): SessionState {
@@ -159,6 +178,7 @@ function ChatContent() {
 
   const [input, setInput] = useState("");
   const [isPromptDrawerOpen, setIsPromptDrawerOpen] = useState(false);
+  const [isFullPromptOpen, setIsFullPromptOpen] = useState(false);
   const [detailLevel, setDetailLevel] = useState(() => {
     const initial = Number(searchParams.get("detail") || 3);
     return Math.min(5, Math.max(1, initial || 3));
@@ -268,11 +288,7 @@ function ChatContent() {
   const selectedToolName = selectedToolData?.name ?? compactToolName;
   const draftLineCount = currentPrompt ? currentPrompt.split("\n").length : 0;
   const targetQuestionCount = QUESTION_TARGETS[detailLevel];
-  const plannedQuestionCount =
-    sessionState.plannedQuestionCount === DEFAULT_SESSION_STATE.plannedQuestionCount
-      ? targetQuestionCount
-      : sessionState.plannedQuestionCount;
-  const totalQuestionCount = Math.max(targetQuestionCount, plannedQuestionCount || 0);
+  const totalQuestionCount = targetQuestionCount;
   const detectedQuestion = detectQuestionNumber(
     renderableMessages as Array<{ role: string; parts: Array<{ type: string; text?: string }> }>
   );
@@ -280,12 +296,13 @@ function ChatContent() {
     totalQuestionCount,
     Math.max(sessionState.currentQuestion, detectedQuestion)
   );
+  const reachedQuestionBudget = currentQuestion >= totalQuestionCount;
   const isFinalPromptReady =
     !isLoading &&
     Boolean(currentPrompt.trim()) &&
     Boolean(latestAssistantText.trim()) &&
-    !/\bQ\d+\b/.test(latestAssistantText) &&
-    currentQuestion >= Math.max(1, totalQuestionCount - 1);
+    reachedQuestionBudget &&
+    hasFinalPromptSignal(latestAssistantText);
   const currentPhase = isFinalPromptReady ? "finalizing" : sessionState.phase;
   const hasVisibleMessages = renderableMessages.length > 0;
   const visibleStackBadges = stack.slice(0, 4);
@@ -565,7 +582,7 @@ function ChatContent() {
                     }
                     onOpenPrompt={
                       isFinalPromptReady && index === lastAssistantMessageIndex
-                        ? () => setIsPromptDrawerOpen(true)
+                        ? () => setIsFullPromptOpen(true)
                         : undefined
                     }
                   />
@@ -648,7 +665,11 @@ function ChatContent() {
                 </div>
 
                 <div className="min-h-0 flex-1">
-                  <PromptPanel prompt={currentPrompt} isStreaming={isLoading} />
+                  <PromptPanel
+                    prompt={currentPrompt}
+                    isStreaming={isLoading}
+                    onOpenFullPrompt={() => setIsFullPromptOpen(true)}
+                  />
                 </div>
               </div>
             </aside>
@@ -688,11 +709,21 @@ function ChatContent() {
                   </div>
                 </div>
                 <div className="min-h-0 flex-1">
-                  <PromptPanel prompt={currentPrompt} isStreaming={isLoading} />
+                  <PromptPanel
+                    prompt={currentPrompt}
+                    isStreaming={isLoading}
+                    onOpenFullPrompt={() => setIsFullPromptOpen(true)}
+                  />
                 </div>
               </div>
             </div>
           )}
+
+          <PromptModal
+            prompt={currentPrompt}
+            isOpen={isFullPromptOpen}
+            onClose={() => setIsFullPromptOpen(false)}
+          />
         </div>
       </div>
     </div>

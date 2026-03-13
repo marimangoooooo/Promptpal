@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Check, Copy, FileText, PanelRightOpen, X } from "lucide-react";
+import { Check, Copy, FileText, PanelRightOpen } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Button } from "@/components/ui/button";
@@ -9,11 +9,15 @@ import { Button } from "@/components/ui/button";
 interface PromptPanelProps {
   prompt: string;
   isStreaming: boolean;
+  onOpenFullPrompt: () => void;
 }
 
-export default function PromptPanel({ prompt, isStreaming }: PromptPanelProps) {
+export default function PromptPanel({
+  prompt,
+  isStreaming,
+  onOpenFullPrompt,
+}: PromptPanelProps) {
   const [copied, setCopied] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const hasPrompt = prompt.trim().length > 0;
   const promptLineCount = prompt.split("\n").length;
@@ -24,22 +28,6 @@ export default function PromptPanel({ prompt, isStreaming }: PromptPanelProps) {
       contentRef.current.scrollTop = 0;
     }
   }, [prompt]);
-
-  useEffect(() => {
-    if (!isExpanded) {
-      return;
-    }
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setIsExpanded(false);
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isExpanded]);
 
   const handleCopy = async () => {
     try {
@@ -75,9 +63,6 @@ export default function PromptPanel({ prompt, isStreaming }: PromptPanelProps) {
               </h2>
             </div>
           </div>
-          <p className="break-words text-sm leading-6 text-slate-600">
-            Review the current brief without taking focus away from the chat.
-          </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 md:shrink-0 md:justify-end">
@@ -106,10 +91,10 @@ export default function PromptPanel({ prompt, isStreaming }: PromptPanelProps) {
               variant="outline"
               size="sm"
               className="h-8 rounded-full border-slate-900/10 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-              onClick={() => setIsExpanded(true)}
+              onClick={onOpenFullPrompt}
             >
               <PanelRightOpen className="size-3.5" />
-              See full prompt
+              Show full prompt
             </Button>
           )}
         </div>
@@ -137,59 +122,10 @@ export default function PromptPanel({ prompt, isStreaming }: PromptPanelProps) {
         )}
         {hasPrompt && isLongPrompt && (
           <div className="mt-4 rounded-[1rem] border border-slate-900/[0.08] bg-[#fbf7f1] px-4 py-3 text-sm text-slate-600">
-            This draft is long. Use <span className="font-semibold text-slate-900">See full prompt</span> for the full-width reading view.
+            This draft is long. Use <span className="font-semibold text-slate-900">Show full prompt</span> for the full-width reading view.
           </div>
         )}
       </div>
-
-      {isExpanded && (
-        <div
-          className="fixed inset-0 z-50 bg-slate-900/[0.28] p-4 backdrop-blur-sm"
-          onClick={() => setIsExpanded(false)}
-        >
-          <div
-            className="relative mx-auto flex h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-[1600px] flex-col overflow-hidden rounded-[1.8rem] border border-slate-900/[0.08] bg-[#fbf7f1] shadow-[0_30px_80px_rgba(29,39,53,0.22)]"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              className="absolute right-5 top-5 z-10 rounded-full border border-slate-900/10 bg-white/95 text-slate-600 shadow-sm hover:bg-white"
-              onClick={() => setIsExpanded(false)}
-              aria-label="Close full prompt"
-            >
-              <X className="size-4" />
-            </Button>
-            <div className="flex flex-col gap-3 border-b border-slate-900/[0.08] px-5 py-4 md:flex-row md:items-center md:justify-between">
-              <div className="min-w-0">
-                <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-slate-500">
-                  Expanded draft
-                </p>
-                <h3 className="mt-1 text-lg font-semibold tracking-tight text-slate-900">
-                  Full prompt preview
-                </h3>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-9 rounded-full border-slate-900/10 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-                  onClick={handleCopy}
-                >
-                  {copied ? <Check className="size-3.5 text-emerald-600" /> : <Copy className="size-3.5" />}
-                  {copied ? "Copied" : "Copy"}
-                </Button>
-              </div>
-            </div>
-
-            <div className="min-h-0 flex-1 overflow-auto px-6 py-6">
-              <div className="markdown-content prompt-content prompt-expanded-view max-w-none pb-6">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>{prompt}</ReactMarkdown>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

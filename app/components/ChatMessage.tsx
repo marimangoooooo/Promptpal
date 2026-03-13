@@ -33,9 +33,6 @@ export default function ChatMessage({
 }: ChatMessageProps) {
   const displayContent = role === "assistant" ? stripPromptState(content) : content;
   const hasPromptPreview = role === "assistant" && Boolean(promptPreview?.trim());
-  const summaryText = hasPromptPreview
-    ? "Your prompt is ready. Review the live preview below or open the full prompt."
-    : displayContent;
 
   if (!displayContent && role === "assistant") {
     return null;
@@ -84,9 +81,7 @@ export default function ChatMessage({
         {role === "assistant" ? (
           <div className="space-y-4">
             <div className="markdown-content text-sm leading-7">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {hasPromptPreview ? summaryText : displayContent}
-              </ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{displayContent}</ReactMarkdown>
               {isStreaming && (
                 <span className="mt-3 inline-flex items-center gap-2 align-middle text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                   <span>Adjusting your prompt</span>
@@ -117,7 +112,7 @@ export default function ChatMessage({
                       className="h-8 rounded-full border-slate-900/10 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
                       onClick={onOpenPrompt}
                     >
-                      See full prompt
+                      Show full prompt
                     </Button>
                   )}
                 </div>

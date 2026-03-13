@@ -7,6 +7,14 @@ const xai = createOpenAI({
   apiKey: process.env.XAI_API_KEY,
 });
 
+const QUESTION_TARGET_MAP: Record<number, number> = {
+  1: 15,
+  2: 18,
+  3: 22,
+  4: 26,
+  5: 30,
+};
+
 const SYSTEM_PROMPT = `You are PromptPal, an AI prompt strategist powered by xAI Grok for people with little to medium technical knowledge.
 
 Your job is to guide the user toward a strong coding prompt while keeping the interview practical, adaptive, and properly researched after every answer.
@@ -29,11 +37,11 @@ Your job is to guide the user toward a strong coding prompt while keeping the in
 9. Treat the selected tool as a background execution constraint, not as the public brand of the final prompt.
 
 ## Detail level behavior
-- Level 1: broad / vague / quick brief, around 15 questions total.
-- Level 2: light detail, around 18 questions total.
-- Level 3: balanced detail, around 22 questions total.
-- Level 4: specific and thorough, around 26 questions total.
-- Level 5: highly detailed and implementation-focused, around 30 questions total.
+- Level 1: broad / quick brief. Finish within 15 total visible questions and keep technical depth light.
+- Level 2: light detail. Finish within 18 total visible questions and ask only a few technical follow-ups.
+- Level 3: balanced detail. Finish within 22 total visible questions with moderate implementation detail.
+- Level 4: specific and thorough. Use close to all 26 questions and make implementation details a major part of the interview.
+- Level 5: highly detailed and implementation-focused. Use close to all 30 questions and ask many technical follow-ups.
 
 At all levels:
 - Keep the first questions accessible for non-experts.
@@ -41,6 +49,18 @@ At all levels:
 - Do not overwhelm the user with jargon early.
 - Still get progressively more specific across the interview.
 - Prefer targeted clarifications over generic broad questions when the user's last answer is too ambiguous.
+
+## Depth-specific question mix
+- Levels 1-2:
+  - focus mostly on product concept, core flow, must-have features, UI feel, and key constraints
+  - ask only a small number of implementation questions
+  - do not drift into long architecture deep-dives unless the user clearly wants that
+- Level 3:
+  - cover product, UI, and implementation in a balanced way
+- Levels 4-5:
+  - spend a large share of the interview on technical specifics
+  - ask about architecture, data model, auth, integrations, APIs, error states, loading states, edge cases, deployment, security, and testing
+  - still phrase technical questions in accessible language when possible
 
 ## Visible response rules
 - Be concise.
@@ -85,6 +105,7 @@ Every assistant response MUST include both hidden blocks exactly in this order:
   - delivery: stack-aware implementation details, integrations, auth, data, deployment, edge cases
   - finalizing: the last 1-2 questions and final prompt tightening
 - Never exceed plannedQuestionCount.
+- Never ask a visible question number above plannedQuestionCount.
 
 ## Question progression
 - Early questions: what the product is, who it serves, what users do, must-have outcomes.
@@ -115,6 +136,16 @@ After every user answer, silently research and reason about:
 
 Do not say that you are researching. Just use that reasoning to ask a better next question and refine the prompt draft.
 
+## Budget enforcement
+- The total visible question budget is strict, not approximate.
+- Broad mode must stop at question 15.
+- Guided mode must stop at question 18.
+- Balanced mode must stop at question 22.
+- Specific mode must stop at question 26.
+- Exhaustive mode must stop at question 30.
+- When the current question budget has been reached, stop asking questions and finalize the prompt.
+- Do not extend the interview just because more details could be asked.
+
 ## Important
 - Keep the draft useful even if the user gives short or vague answers.
 - The final prompt should usually have a neutral title like "Production Build Prompt" or a project-specific title, not "for Claude Code" or similar tool branding.
@@ -132,6 +163,32 @@ function getTextFromParts(parts: UIMessage["parts"]): string {
     .join("");
 }
 
+function stripHiddenBlocks(content: string): string {
+  return content
+    .replace(/<!-- PROMPT_STATE -->[\s\S]*?<!-- \/PROMPT_STATE -->/g, "")
+    .replace(/<!-- SESSION_STATE -->[\s\S]*?<!-- \/SESSION_STATE -->/g, "")
+    .trim();
+}
+
+function detectLastVisibleQuestion(messages: Array<{ role: string; content: string }>): number {
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    const message = messages[index];
+
+    if (message.role !== "assistant") {
+      continue;
+    }
+
+    const visibleText = stripHiddenBlocks(message.content);
+    const match = visibleText.match(/(?:^|\n)\s*Q(\d+):/);
+
+    if (match) {
+      return Number.parseInt(match[1], 10);
+    }
+  }
+
+  return 0;
+}
+
 export async function POST(req: Request) {
   const body = await req.json();
   const { messages: rawMessages, tool, stack, detailLevel } = body;
@@ -142,13 +199,34 @@ export async function POST(req: Request) {
   }));
 
   const detail = Math.min(5, Math.max(1, Number(detailLevel) || 3));
-  const questionTargetMap: Record<number, number> = {
-    1: 15,
-    2: 18,
-    3: 22,
-    4: 26,
-    5: 30,
-  };
+  const questionTarget = QUESTION_TARGET_MAP[detail];
+  const lastAskedQuestion = detectLastVisibleQuestion(messages);
+  const lastMessageRole = messages[messages.length - 1]?.role ?? "user";
+  const shouldFinalizeNow = lastMessageRole === "user" && lastAskedQuestion >= questionTarget;
+  const nextQuestionNumber =
+    lastMessageRole === "user"
+      ? Math.min(questionTarget, lastAskedQuestion + 1 || 1)
+      : Math.min(questionTarget, Math.max(1, lastAskedQuestion));
+
+  const turnBudgetPrompt = `
+## Current turn constraints
+- Last incoming message role: ${lastMessageRole}
+- Last visible question already asked: ${lastAskedQuestion || "none yet"}
+- Strict visible question budget for this session: ${questionTarget}
+- Next question number, if you ask another one: ${nextQuestionNumber}
+
+Rules for this turn:
+- If no visible question has been asked yet, your next response must ask Q1.
+- If the last incoming message is from the user and the last visible question already asked is ${questionTarget} or higher, do not ask another question. Finalize now.
+- If you ask another question on this turn, it must be exactly Q${nextQuestionNumber}: and no other number.
+- Never ask a question above Q${questionTarget}.
+- plannedQuestionCount must be ${questionTarget}.
+- ${
+    shouldFinalizeNow
+      ? "You have reached the question budget. This turn must finalize the prompt instead of asking another question."
+      : "Stay within budget and keep the interview moving toward completion."
+  }
+`;
 
   const systemPrompt = SYSTEM_PROMPT.replaceAll(
     "{{TOOL}}",
@@ -161,8 +239,8 @@ export async function POST(req: Request) {
     String(detail)
   ).replaceAll(
     "{{QUESTION_TARGET}}",
-    String(questionTargetMap[detail])
-  );
+    String(questionTarget)
+  ) + turnBudgetPrompt;
 
   const model = process.env.GROK_MODEL || "grok-4-1-fast-non-reasoning";
 

@@ -280,6 +280,7 @@ body::after {
 .prompt-expanded-view {
   overflow-wrap: normal;
   word-break: normal;
+  min-width: 100%;
 }
 
 .prompt-expanded-view p,
@@ -296,6 +297,10 @@ body::after {
 .prompt-expanded-view code {
   white-space: pre;
   word-break: normal;
+}
+
+.prompt-expanded-view > * {
+  max-width: none;
 }
 
 @keyframes rise-in {
