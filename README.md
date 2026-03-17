@@ -1,4 +1,4 @@
-# PromptPal
+# PromptPal - Your AI Prompt Engineer
 
 PromptPal is an idea-first prompt studio for AI coding projects.
 
