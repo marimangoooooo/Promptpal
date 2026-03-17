@@ -32,6 +32,18 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# Environment / secret files - NEVER commit real keys!
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.production
+.env*.local          # catches .env.staging.local etc.
+
+# But allow people to commit a template/example
+!.env.example
+!.env.template
 
 # vercel
 .vercel

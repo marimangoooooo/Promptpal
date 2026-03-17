@@ -112,6 +112,15 @@ body::after {
     radial-gradient(circle at 82% 82%, rgba(24, 79, 73, 0.1), transparent 24%);
 }
 
+body[data-homepage="true"] {
+  background: #222222;
+}
+
+body[data-homepage="true"]::before,
+body[data-homepage="true"]::after {
+  opacity: 0;
+}
+
 ::selection {
   background: rgba(24, 79, 73, 0.18);
   color: var(--foreground);
@@ -152,6 +161,25 @@ body::after {
   box-shadow: 0 22px 55px rgba(37, 46, 58, 0.14);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
+}
+
+.homepage-topology-shell {
+  z-index: 0;
+  background: #222222;
+}
+
+.homepage-topology-canvas {
+  background: #222222;
+  opacity: 0.88;
+  transform: scale(1.02);
+  transform-origin: center;
+}
+
+.homepage-topology-canvas canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  opacity: 0.92;
 }
 
 .eyebrow {

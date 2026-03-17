@@ -58,6 +58,7 @@ const QUESTION_TARGETS: Record<number, number> = {
 };
 
 const MODEL_DISPLAY_NAME = "xAI Grok";
+const MIN_INITIAL_BRIEF_WORDS = 120;
 
 function detectQuestionNumber(messages: HiddenBlockMessage[]): number {
   for (let index = messages.length - 1; index >= 0; index -= 1) {
@@ -94,6 +95,16 @@ function hasFinalPromptSignal(text: string): boolean {
     "full prompt below",
     "prompt preview",
   ].some((phrase) => normalized.includes(phrase));
+}
+
+function getWordCount(value: string): number {
+  const normalized = value.trim();
+
+  if (!normalized) {
+    return 0;
+  }
+
+  return normalized.split(/\s+/).length;
 }
 
 function buildManualAgent(toolId: string | null): RecommendationEntity | null {
@@ -135,13 +146,13 @@ function IdeaStarterCard() {
               Let&apos;s improve your prompt
             </p>
             <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-900">
-              Share your idea and PromptPal will help complete it.
+              Start with the brief you already thought through.
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
-              Drop in the rough product concept, what you want it to feel like,
-              or even a messy base prompt. PromptPal will research the idea,
-              suggest the right coding agent and stack, ask focused follow-up
-              questions, and keep the live prompt moving.
+              PromptPal is here to sharpen an existing product direction into a
+              stronger build prompt. Start with a concrete brief, target user,
+              and outcome so the first question can refine the plan instead of
+              guessing what you mean.
             </p>
 
             <div className="mt-4 flex flex-wrap gap-2">
@@ -172,8 +183,12 @@ function IdeaStarterCard() {
               </div>
               <p className="mt-2 text-sm leading-6 text-slate-600">
                 &quot;I want a platform for local fitness coaches to sell
-                memberships and manage classes. It should feel premium and be
-                easy for non-technical staff to update.&quot;
+                memberships, manage recurring classes, and handle client
+                waivers online. It should feel premium, work well on mobile,
+                and be easy for non-technical staff to update.&quot;
+              </p>
+              <p className="mt-3 text-xs font-medium uppercase tracking-[0.18em] text-slate-500">
+                Aim for a real brief with at least 120 words.
               </p>
             </div>
           </div>
@@ -186,6 +201,7 @@ function IdeaStarterCard() {
 function ChatContent() {
   const searchParams = useSearchParams();
   const [input, setInput] = useState("");
+  const [inputError, setInputError] = useState<string | null>(null);
   const [isPromptDrawerOpen, setIsPromptDrawerOpen] = useState(false);
   const [isFullPromptOpen, setIsFullPromptOpen] = useState(false);
   const [selectedToolOverride, setSelectedToolOverride] = useState<string | null>(null);
@@ -318,6 +334,11 @@ function ChatContent() {
     hasFinalPromptSignal(latestAssistantText);
   const currentPhase = isFinalPromptReady ? "finalizing" : sessionState.phase;
   const hasVisibleMessages = renderableMessages.length > 0;
+  const isFirstTurn = !hasVisibleMessages;
+  const trimmedInput = input.trim();
+  const wordCount = getWordCount(input);
+  const isInitialBriefTooShort =
+    isFirstTurn && wordCount > 0 && wordCount < MIN_INITIAL_BRIEF_WORDS;
   const promptPreview = currentPrompt
     .split("\n")
     .map((line) => line.trim())
@@ -330,15 +351,31 @@ function ChatContent() {
     ? "max-w-[min(1240px,100%)]"
     : "max-w-[min(1480px,100%)]";
 
+  const handleInputChange = (value: string) => {
+    setInput(value);
+
+    if (inputError) {
+      setInputError(null);
+    }
+  };
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
-    if (!input.trim() || isLoading) {
+    if (!trimmedInput || isLoading) {
       return;
     }
 
-    sendMessage({ text: input.trim() });
+    if (isFirstTurn && wordCount < MIN_INITIAL_BRIEF_WORDS) {
+      setInputError(
+        `Start with at least ${MIN_INITIAL_BRIEF_WORDS} words so PromptPal can refine a fully thought-through brief instead of filling in the gaps for you.`
+      );
+      return;
+    }
+
+    sendMessage({ text: trimmedInput });
     setInput("");
+    setInputError(null);
   };
 
   const handleExport = () => {
@@ -624,43 +661,69 @@ function ChatContent() {
             </div>
 
             <div className="shrink-0 border-t border-slate-900/[0.08] bg-white/60 px-3.5 py-2.5 md:px-4">
-              <form
-                className={cn(
-                  "mx-auto flex w-full items-end gap-3",
-                  desktopContentWidthClass
-                )}
-                onSubmit={handleSubmit}
-              >
-                <div className="flex-1 rounded-[1.35rem] border border-slate-900/10 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
-                  <Input
-                    type="text"
-                    value={input}
-                    onChange={(event) => setInput(event.target.value)}
-                    placeholder={
-                      renderableMessages.length === 0
-                        ? "Share your project idea, rough concept, or base prompt..."
-                        : "Answer the current question or refine the brief..."
-                    }
-                    className="h-[52px] rounded-[1.35rem] border-0 bg-transparent px-5 text-base text-slate-900 placeholder:text-slate-400 focus-visible:ring-0"
-                    disabled={isLoading}
-                    autoFocus
-                  />
-                </div>
+              <div className={cn("mx-auto w-full", desktopContentWidthClass)}>
+                <form className="flex w-full items-end gap-3" onSubmit={handleSubmit}>
+                  <div className="flex-1 rounded-[1.35rem] border border-slate-900/10 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
+                    {isFirstTurn ? (
+                      <textarea
+                        value={input}
+                        onChange={(event) => handleInputChange(event.target.value)}
+                        placeholder="Write at least 120 words describing the product you already want to build, who it serves, the core workflow, and what success should look like..."
+                        className="min-h-[180px] w-full resize-none rounded-[1.35rem] border-0 bg-transparent px-5 py-4 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none"
+                        disabled={isLoading}
+                        rows={7}
+                        autoFocus
+                      />
+                    ) : (
+                      <Input
+                        type="text"
+                        value={input}
+                        onChange={(event) => handleInputChange(event.target.value)}
+                        placeholder="Answer the current question or refine the brief..."
+                        className="h-[52px] rounded-[1.35rem] border-0 bg-transparent px-5 text-base text-slate-900 placeholder:text-slate-400 focus-visible:ring-0"
+                        disabled={isLoading}
+                        autoFocus
+                      />
+                    )}
+                  </div>
 
-                <Button
-                  type="submit"
-                  size="icon"
-                  className={cn(
-                    "size-[52px] rounded-[1.35rem] shadow-none transition-all",
-                    input.trim() && !isLoading
-                      ? "bg-slate-900 text-white hover:-translate-y-0.5 hover:bg-slate-800"
-                      : "bg-slate-300 text-slate-500"
-                  )}
-                  disabled={isLoading || !input.trim()}
-                >
-                  <Send className="size-5" />
-                </Button>
-              </form>
+                  <Button
+                    type="submit"
+                    size="icon"
+                    className={cn(
+                      "size-[52px] rounded-[1.35rem] shadow-none transition-all",
+                      trimmedInput && !isLoading && !isInitialBriefTooShort
+                        ? "bg-slate-900 text-white hover:-translate-y-0.5 hover:bg-slate-800"
+                        : "bg-slate-300 text-slate-500"
+                    )}
+                    disabled={isLoading || !trimmedInput || isInitialBriefTooShort}
+                  >
+                    <Send className="size-5" />
+                  </Button>
+                </form>
+
+                {isFirstTurn && (
+                  <div className="mt-2 flex items-start justify-between gap-3 px-1">
+                    <p
+                      className={cn(
+                        "max-w-3xl text-xs leading-5",
+                        inputError || isInitialBriefTooShort ? "text-rose-600" : "text-slate-500"
+                      )}
+                    >
+                      {inputError ??
+                        `Start with at least ${MIN_INITIAL_BRIEF_WORDS} words. Cover the product, who it is for, the main workflow, and the outcome so PromptPal can refine a real brief.`}
+                    </p>
+                    <span
+                      className={cn(
+                        "shrink-0 text-xs font-semibold",
+                        inputError || isInitialBriefTooShort ? "text-rose-600" : "text-slate-500"
+                      )}
+                    >
+                      {wordCount}/{MIN_INITIAL_BRIEF_WORDS} words min
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
           </main>
 

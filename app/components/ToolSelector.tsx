@@ -8,7 +8,6 @@ import {
   Check,
   Code2,
   Cpu,
-  Globe,
   Sparkles,
   Terminal,
   Zap,
@@ -80,15 +79,6 @@ export const TOOLS: Tool[] = [
     icon: Cpu,
     accentClass: "from-cyan-500/[0.15] via-cyan-500/5 to-transparent",
     iconClass: "bg-cyan-500/[0.12] text-cyan-700",
-  },
-  {
-    id: "bolt",
-    name: "Bolt.new",
-    description: "Browser-native prototyping and shipping",
-    label: "Browser",
-    icon: Globe,
-    accentClass: "from-fuchsia-500/[0.15] via-fuchsia-500/5 to-transparent",
-    iconClass: "bg-fuchsia-500/[0.12] text-fuchsia-700",
   },
   {
     id: "aider",
