@@ -237,4 +237,4 @@ State is primarily browser-side plus streamed hidden prompt/recommendation/sessi
 
 ## Why This Project Exists
 
-Many users know what they want to build but do not know how to describe it clearly enough for an AI coding agent. PromptPal fills that gap by starting from the idea, inferring the likely build setup, and turning incomplete concepts into implementation-ready prompts.
+Many users know what they want to build but do not know how to describe it clearly enough for an AI coding agent or lack the technical understanding to know what the project actually needs. I faced these problems myself, so I decided to create a project that could help others when it comes to right prompting and finding the right tech stack. PromptPal fills that gap by starting from the idea, inferring the likely build setup, and turning incomplete concepts into implementation-ready prompts.
