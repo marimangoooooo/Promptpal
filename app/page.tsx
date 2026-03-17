@@ -144,13 +144,10 @@ export default function Home() {
                   <div className="space-y-2">
                     <p className="eyebrow">What changes here</p>
                     <h2 className="max-w-[16ch] text-[1.45rem] font-semibold tracking-tight text-slate-900 sm:text-[1.85rem] sm:leading-[1.08]">
-                      The user brings the brief. PromptPal brings the workflow,
-                      recommendations, and corrections.
+                      Bring the brief. PromptPal makes it build-ready.
                     </h2>
                     <p className="max-w-xl text-sm leading-6 text-slate-600 sm:text-base">
-                      PromptPal is for refining an existing product direction into
-                      a stronger build prompt. It is not meant to help users
-                      discover what to build from scratch.
+                      So your idea finally gets a chance to come alive.
                     </p>
                   </div>
 
