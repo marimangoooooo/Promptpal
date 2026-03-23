@@ -63,7 +63,7 @@ export default function PromptModal({ prompt, isOpen, onClose }: PromptModalProp
 
   return (
     <div
-      className="fixed inset-0 z-[70] bg-slate-900/[0.38] p-3 backdrop-blur-sm md:p-4"
+      className="fixed inset-0 z-[120] bg-slate-900/[0.38] p-3 backdrop-blur-sm md:p-4"
       onClick={handleClose}
     >
       <div

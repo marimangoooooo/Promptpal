@@ -13,6 +13,7 @@ import {
   Zap,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { TOOL_PRESETS } from "@/lib/prompt-catalog";
 import { cn } from "@/lib/utils";
 
 export interface Tool {
@@ -25,71 +26,55 @@ export interface Tool {
   iconClass: string;
 }
 
-export const TOOLS: Tool[] = [
-  {
-    id: "cursor",
-    name: "Cursor",
-    description: "Agentic editor for long-running code changes",
-    label: "Editor",
+const TOOL_STYLES: Record<
+  string,
+  Pick<Tool, "icon" | "accentClass" | "iconClass">
+> = {
+  cursor: {
     icon: Code2,
     accentClass: "from-sky-500/[0.15] via-sky-500/5 to-transparent",
     iconClass: "bg-sky-500/[0.12] text-sky-700",
   },
-  {
-    id: "antigravity",
-    name: "Antigravity",
-    description: "Research-heavy DeepMind workflow",
-    label: "Research",
+  antigravity: {
     icon: Sparkles,
     accentClass: "from-emerald-500/[0.15] via-emerald-500/5 to-transparent",
     iconClass: "bg-emerald-500/[0.12] text-emerald-700",
   },
-  {
-    id: "claude-code",
-    name: "Claude Code",
-    description: "CLI agent for structured implementation work",
-    label: "Terminal",
+  "claude-code": {
     icon: Terminal,
     accentClass: "from-amber-500/[0.15] via-amber-500/5 to-transparent",
     iconClass: "bg-amber-500/[0.12] text-amber-700",
   },
-  {
-    id: "codex",
-    name: "Codex CLI",
-    description: "OpenAI agent built for code execution",
-    label: "CLI",
+  codex: {
     icon: Bot,
     accentClass: "from-teal-500/[0.15] via-teal-500/5 to-transparent",
     iconClass: "bg-teal-500/[0.12] text-teal-700",
   },
-  {
-    id: "windsurf",
-    name: "Windsurf",
-    description: "Fast IDE workflow with embedded chat",
-    label: "IDE",
+  windsurf: {
     icon: Zap,
     accentClass: "from-rose-500/[0.15] via-rose-500/5 to-transparent",
     iconClass: "bg-rose-500/[0.12] text-rose-700",
   },
-  {
-    id: "copilot",
-    name: "GitHub Copilot",
-    description: "Inline assistant for code-first teams",
-    label: "Pairing",
+  copilot: {
     icon: Cpu,
     accentClass: "from-cyan-500/[0.15] via-cyan-500/5 to-transparent",
     iconClass: "bg-cyan-500/[0.12] text-cyan-700",
   },
-  {
-    id: "aider",
-    name: "Aider",
-    description: "Diff-oriented terminal collaboration",
-    label: "Diffs",
+  aider: {
     icon: Braces,
     accentClass: "from-orange-500/[0.15] via-orange-500/5 to-transparent",
     iconClass: "bg-orange-500/[0.12] text-orange-700",
   },
-];
+};
+
+export const TOOLS: Tool[] = TOOL_PRESETS.map((tool) => ({
+  ...tool,
+  ...(TOOL_STYLES[tool.id] ?? {
+    icon: Bot,
+    accentClass: "from-slate-500/[0.15] via-slate-500/5 to-transparent",
+    iconClass: "bg-slate-500/[0.12] text-slate-700",
+  }),
+}));
 
 interface ToolSelectorProps {
   selected: string | null;
@@ -144,7 +129,11 @@ export default function ToolSelector({ selected, onSelect }: ToolSelectorProps) 
                       : "border-slate-900/[0.12] bg-white/80"
                   )}
                 >
-                  {isSelected ? <Check className="size-3.5" /> : <span className="size-2 rounded-full bg-current" />}
+                  {isSelected ? (
+                    <Check className="size-3.5" />
+                  ) : (
+                    <span className="size-2 rounded-full bg-current" />
+                  )}
                 </div>
               </div>
 

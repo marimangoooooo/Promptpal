@@ -15,9 +15,9 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PromptPal - Idea-First AI Prompt Studio",
+  title: "PromptPal - Research-First Prompt System",
   description:
-    "Start with a rough idea, get AI setup recommendations, and shape it into a production-ready coding prompt.",
+    "Share the idea once, let PromptPal research the stack and layout, and leave with a larger build-ready prompt.",
 };
 
 export default function RootLayout({

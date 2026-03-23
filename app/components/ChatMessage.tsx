@@ -5,7 +5,7 @@ import { Bot, User } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Button } from "@/components/ui/button";
-import { stripHiddenBlocks } from "@/lib/prompt-state";
+import { stripHiddenBlocks, stripSuggestedRepliesText } from "@/lib/prompt-state";
 import { cn } from "@/lib/utils";
 
 interface ChatMessageProps {
@@ -14,6 +14,44 @@ interface ChatMessageProps {
   isStreaming?: boolean;
   promptPreview?: string;
   onOpenPrompt?: () => void;
+  questionFocus?: string;
+  sanitizeCurrentQuestion?: boolean;
+}
+
+function sanitizeQuestionForFocus(content: string, questionFocus?: string) {
+  if (!questionFocus) {
+    return content;
+  }
+
+  const questionCount = Array.from(content.matchAll(/(?:^|\n)\s*Q\d+:/g)).length;
+  if (questionCount > 1) {
+    return content;
+  }
+
+  if (questionFocus === "product_and_primary_users") {
+    return content
+      .replace(
+        /([?!.])\s+(?:And\s+)?(?:do|does|would|should).*(?:account|accounts|registration|sign[\s-]?up|login|guest access).*$/i,
+        "$1"
+      )
+      .replace(
+        /(,\s*(?:and\s+)?(?:do|does|would|should).*(?:account|accounts|registration|sign[\s-]?up|login|guest access).*)$/i,
+        ""
+      )
+      .trim();
+  }
+
+  if (questionFocus === "accounts_and_roles") {
+    const accountStart = content.match(
+      /Q\d+:\s*(?:Do|Does|Should|Will|Would|Can).*(?:account|accounts|registration|sign[\s-]?up|login|guest access)/i
+    );
+
+    if (accountStart) {
+      return accountStart[0].trim();
+    }
+  }
+
+  return content;
 }
 
 export default function ChatMessage({
@@ -22,8 +60,17 @@ export default function ChatMessage({
   isStreaming = false,
   promptPreview,
   onOpenPrompt,
+  questionFocus,
+  sanitizeCurrentQuestion = false,
 }: ChatMessageProps) {
-  const displayContent = role === "assistant" ? stripHiddenBlocks(content) : content;
+  const cleanedContent =
+    role === "assistant"
+      ? stripSuggestedRepliesText(stripHiddenBlocks(content))
+      : content;
+  const displayContent =
+    role === "assistant" && sanitizeCurrentQuestion
+      ? sanitizeQuestionForFocus(cleanedContent, questionFocus)
+      : cleanedContent;
   const hasPromptPreview = role === "assistant" && Boolean(promptPreview?.trim());
 
   if (!displayContent && role === "assistant") {
@@ -51,24 +98,16 @@ export default function ChatMessage({
             : "bg-slate-900 text-white shadow-[0_16px_34px_rgba(29,39,53,0.16)]"
         )}
       >
-        <div className="mb-3 flex items-center gap-2">
-          <div
-            className={cn(
-              "flex size-7 items-center justify-center rounded-full",
-              role === "assistant" ? "bg-slate-100 text-slate-700" : "bg-white/[0.12] text-white"
-            )}
-          >
-            {role === "assistant" ? <Bot className="size-3.5" /> : <User className="size-3.5" />}
+        {role === "assistant" && (
+          <div className="mb-3 flex items-center gap-2">
+            <div className="flex size-7 items-center justify-center rounded-full bg-slate-100 text-slate-700">
+              <Bot className="size-3.5" />
+            </div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+              Prompt Agent
+            </p>
           </div>
-          <p
-            className={cn(
-              "text-xs font-semibold uppercase tracking-[0.18em]",
-              role === "assistant" ? "text-slate-500" : "text-white/70"
-            )}
-          >
-            {role === "assistant" ? "Prompt Strategist" : "You"}
-          </p>
-        </div>
+        )}
 
         {role === "assistant" ? (
           <div className="space-y-4">
@@ -76,7 +115,7 @@ export default function ChatMessage({
               <ReactMarkdown remarkPlugins={[remarkGfm]}>{displayContent}</ReactMarkdown>
               {isStreaming && (
                 <span className="mt-3 inline-flex items-center gap-2 align-middle text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                  <span>Adjusting your prompt</span>
+                  <span>Researching and refining</span>
                   <span className="inline-flex items-center gap-1">
                     <span className="size-1.5 animate-pulse rounded-full bg-[#d07b49]" />
                     <span className="size-1.5 animate-pulse rounded-full bg-[#d07b49] [animation-delay:180ms]" />
@@ -94,7 +133,7 @@ export default function ChatMessage({
                       Prompt preview
                     </p>
                     <p className="mt-1 text-sm font-semibold text-slate-900">
-                      Same draft, condensed view
+                      Current master prompt
                     </p>
                   </div>
                   {onOpenPrompt && (
@@ -104,7 +143,7 @@ export default function ChatMessage({
                       className="h-8 rounded-full border-slate-900/10 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
                       onClick={onOpenPrompt}
                     >
-                      Show full prompt
+                      See full prompt
                     </Button>
                   )}
                 </div>
@@ -124,11 +163,6 @@ export default function ChatMessage({
         )}
       </div>
 
-      {role === "user" && (
-        <div className="mt-1 flex size-10 shrink-0 items-center justify-center rounded-[1rem] bg-white text-slate-900 shadow-sm">
-          <User className="size-[18px]" />
-        </div>
-      )}
     </div>
   );
 }

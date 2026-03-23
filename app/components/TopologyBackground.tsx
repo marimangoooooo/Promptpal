@@ -2,11 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const P5_SCRIPT_SRC = "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js";
-const VANTA_TOPOLOGY_SRC = "https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.topology.min.js";
-const SCRIPT_DATA_ATTRIBUTE = "data-topology-script";
+const P5_SCRIPT_SRC =
+  "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js";
+const VANTA_TOPOLOGY_SRC =
+  "https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.topology.min.js";
+const SCRIPT_DATA_ATTRIBUTE = "data-vanta-script";
 
-type VantaTopologyEffect = {
+type VantaEffect = {
   destroy: () => void;
   resize?: () => void;
 };
@@ -22,15 +24,15 @@ type TopologyFactory = (options: {
   scale: number;
   scaleMobile: number;
   color: number;
-  backgroundColor?: number;
-}) => VantaTopologyEffect;
+  backgroundColor: number;
+}) => VantaEffect;
 
 declare global {
   interface Window {
+    p5?: unknown;
     VANTA?: {
       TOPOLOGY?: TopologyFactory;
     };
-    p5?: unknown;
   }
 }
 
@@ -42,7 +44,6 @@ function loadScript(src: string, key: string): Promise<void> {
   }
 
   const cachedPromise = scriptCache.get(src);
-
   if (cachedPromise) {
     return cachedPromise;
   }
@@ -93,20 +94,24 @@ function loadScript(src: string, key: string): Promise<void> {
   return promise;
 }
 
-function shouldAnimateTopology(): boolean {
+function shouldAnimateBackground(): boolean {
   if (typeof window === "undefined") {
     return false;
   }
 
-  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const connection = navigator as Navigator & { connection?: { saveData?: boolean } };
+  const prefersReducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+  const connection = navigator as Navigator & {
+    connection?: { saveData?: boolean };
+  };
 
   return !prefersReducedMotion && !connection.connection?.saveData;
 }
 
 export default function TopologyBackground() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const effectRef = useRef<VantaTopologyEffect | null>(null);
+  const effectRef = useRef<VantaEffect | null>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
   const [isAnimationEnabled, setIsAnimationEnabled] = useState(false);
 
@@ -117,19 +122,17 @@ export default function TopologyBackground() {
 
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     const handleMotionChange = () => {
-      setIsAnimationEnabled(shouldAnimateTopology());
+      setIsAnimationEnabled(shouldAnimateBackground());
     };
 
     handleMotionChange();
 
     if (typeof mediaQuery.addEventListener === "function") {
       mediaQuery.addEventListener("change", handleMotionChange);
-
       return () => mediaQuery.removeEventListener("change", handleMotionChange);
     }
 
     mediaQuery.addListener(handleMotionChange);
-
     return () => mediaQuery.removeListener(handleMotionChange);
   }, []);
 
@@ -148,7 +151,6 @@ export default function TopologyBackground() {
       resizeObserverRef.current = null;
       effectRef.current?.destroy();
       effectRef.current = null;
-      container.replaceChildren();
     };
 
     const initializeEffect = async () => {
@@ -174,16 +176,15 @@ export default function TopologyBackground() {
           minHeight: 200,
           minWidth: 200,
           scale: 1,
-          scaleMobile: 0.72,
-          color: 0xdf2aed,
-          backgroundColor: 0x222222,
+          scaleMobile: 1,
+          color: 0xff00df,
+          backgroundColor: 0x000000,
         });
 
         if ("ResizeObserver" in window && effectRef.current?.resize) {
           resizeObserverRef.current = new ResizeObserver(() => {
             effectRef.current?.resize?.();
           });
-
           resizeObserverRef.current.observe(container);
         }
       } catch {
@@ -191,21 +192,15 @@ export default function TopologyBackground() {
       }
     };
 
-    const queueInitialization = () => {
-      if (typeof window.requestIdleCallback === "function") {
-        idleHandle = window.requestIdleCallback(() => {
-          void initializeEffect();
-        }, { timeout: 1400 });
-
-        return;
-      }
-
+    if (typeof window.requestIdleCallback === "function") {
+      idleHandle = window.requestIdleCallback(() => {
+        void initializeEffect();
+      }, { timeout: 1200 });
+    } else {
       timeoutHandle = window.setTimeout(() => {
         void initializeEffect();
-      }, 300);
-    };
-
-    queueInitialization();
+      }, 260);
+    }
 
     return () => {
       isCancelled = true;
@@ -227,7 +222,8 @@ export default function TopologyBackground() {
       aria-hidden="true"
       className="pointer-events-none fixed inset-0 overflow-hidden homepage-topology-shell"
     >
-      <div ref={containerRef} className="absolute inset-0 homepage-topology-canvas" />
+      <div ref={containerRef} className="absolute inset-0 homepage-topology-vanta" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,0,223,0.18),transparent_34%),radial-gradient(circle_at_82%_22%,rgba(255,255,255,0.08),transparent_20%),linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.24)_100%)]" />
     </div>
   );
 }

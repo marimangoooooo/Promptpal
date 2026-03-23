@@ -165,21 +165,20 @@ body[data-homepage="true"]::after {
 
 .homepage-topology-shell {
   z-index: 0;
-  background: #222222;
+  background: #000000;
 }
 
-.homepage-topology-canvas {
-  background: #222222;
-  opacity: 0.88;
+.homepage-topology-vanta {
+  opacity: 0.98;
   transform: scale(1.02);
   transform-origin: center;
 }
 
-.homepage-topology-canvas canvas {
+.homepage-topology-vanta canvas {
   width: 100% !important;
   height: 100% !important;
   display: block;
-  opacity: 0.92;
+  opacity: 0.96;
 }
 
 .eyebrow {
@@ -376,6 +375,46 @@ body[data-homepage="true"]::after {
   background-size: 200% 100%;
   animation: shimmer 2.4s linear infinite;
 }
+
+@keyframes thinking-progress {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.thinking-bar {
+  position: relative;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: rgba(29, 39, 53, 0.08);
+}
+
+.thinking-bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(208, 123, 73, 0.5) 30%,
+    rgba(24, 79, 73, 0.6) 50%,
+    rgba(208, 123, 73, 0.5) 70%,
+    transparent 100%
+  );
+  animation: thinking-progress 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.sidebar-progress-fill {
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 
 @theme inline {
   --font-sans: var(--font-sans);
