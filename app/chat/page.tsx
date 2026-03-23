@@ -55,7 +55,6 @@ import {
 import { cn } from "@/lib/utils";
 
 const MODEL_DISPLAY_NAME = "xAI Grok 4.20";
-const MIN_INITIAL_BRIEF_WORDS = 60;
 const DEFAULT_RESEARCH_DEPTH = 4;
 
 type WorkspacePage = "research" | "ui" | "config" | "prompt";
@@ -178,11 +177,6 @@ function sortReplySegments(segments: string[]) {
 
     return left.localeCompare(right);
   });
-}
-
-function getWordCount(value: string) {
-  const normalized = value.trim();
-  return normalized ? normalized.split(/\s+/).length : 0;
 }
 
 function buildResearchBatchId(questions: ResearchQuestionBatchItem[]) {
@@ -557,9 +551,7 @@ function ChatContent() {
     questionBatch.length === 0 &&
     answeredQuestion >= Math.min(MIN_INITIAL_RESEARCH_QUESTIONS, plannedQuestionCount) &&
     coveredFocusCount >= Math.max(5, QUESTION_FOCUS_SEQUENCE.length - 1);
-  const wordCount = getWordCount(input);
   const trimmedInput = input.trim();
-  const isInitialBriefTooShort = isFirstTurn && wordCount > 0 && wordCount < MIN_INITIAL_BRIEF_WORDS;
 
   const canOpenUiPage =
     (sessionState.readyForUiPage ||
@@ -911,11 +903,6 @@ function ChatContent() {
     event.preventDefault();
     if (!trimmedInput || isLoading) return;
 
-    if (isFirstTurn && wordCount < MIN_INITIAL_BRIEF_WORDS) {
-      setInputError(`Start with at least ${MIN_INITIAL_BRIEF_WORDS} words so the research pass has enough signal.`);
-      return;
-    }
-
     if (isInBatchMode && currentBatchQuestion) {
       submitBatchAnswer(trimmedInput);
       return;
@@ -1092,7 +1079,7 @@ function ChatContent() {
   };
 
   const placeholder = isFirstTurn
-    ? "Describe the product idea, who it serves, the main workflow, and the outcome you want. Aim for at least 60 words..."
+    ? "Describe the product idea, who it serves, the main workflow, and the outcome you want..."
     : resolvedActivePage === "research" && questionBatch.length > 1
       ? "Answer the current research question. Use a suggestion or type your own answer."
       : resolvedActivePage === "research" && canOpenUiPage
@@ -1793,7 +1780,7 @@ function ChatContent() {
                           )}
                         </div>
 
-                        <Button type="submit" size="icon" className={cn("size-[52px] rounded-[1.35rem] shadow-none transition-all", trimmedInput && !isLoading && !isInitialBriefTooShort ? "bg-slate-900 text-white hover:-translate-y-0.5 hover:bg-slate-800" : "bg-slate-300 text-slate-500")} disabled={isLoading || !trimmedInput || isInitialBriefTooShort}>
+                        <Button type="submit" size="icon" className={cn("size-[52px] rounded-[1.35rem] shadow-none transition-all", trimmedInput && !isLoading ? "bg-slate-900 text-white hover:-translate-y-0.5 hover:bg-slate-800" : "bg-slate-300 text-slate-500")} disabled={isLoading || !trimmedInput}>
                           <Send className="size-5" />
                         </Button>
                       </form>

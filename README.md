@@ -30,7 +30,6 @@ It is built for people who already know roughly what they want to make, but want
 
 ### Research
 
-- the first message requires at least `60` words
 - the initial research batch targets at least `20` questions
 - research questions use stable `topicId` metadata internally
 - food and recipe briefs trigger extra leftover-first research and ranking guardrails
