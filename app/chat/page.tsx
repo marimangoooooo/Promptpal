@@ -546,12 +546,6 @@ function ChatContent() {
       : currentBatchQuestion?.number ?? currentQuestion;
   const displayedQuestionLabel =
     displayedQuestionNumber > 0 ? `Q${displayedQuestionNumber}/${plannedQuestionCount}` : `Up to ${questionBudgetMax} questions`;
-  const activeBatchRange =
-    questionBatch.length > 1
-      ? `Q${questionBatch[0]?.number}-${questionBatch[questionBatch.length - 1]?.number}`
-      : questionBatch.length === 1
-        ? `Q${questionBatch[0].number}`
-        : null;
 
   const hasStartedResearchInterview =
     currentQuestion > 0 || detectedQuestion > 0 || questionBatch.length > 0;
@@ -576,15 +570,6 @@ function ChatContent() {
       hasResearchCompletionFallback) &&
     (hasStartedResearchInterview || sessionState.researchComplete);
   const isResearchReadyForUi = !isLoading && questionBatch.length === 0 && canOpenUiPage;
-  const questionProgressPercent =
-    isResearchReadyForUi
-      ? 100
-      : displayedQuestionNumber > 0
-        ? Math.min(
-            100,
-            ((Math.max(displayedQuestionNumber - 1, 0)) / Math.max(plannedQuestionCount, 1)) * 100
-          )
-        : 0;
   const hasUiSelections =
     Boolean(selectedLayoutOverride) ||
     Boolean(logoPlacement) ||
@@ -666,16 +651,6 @@ function ChatContent() {
   }, [resolvedActivePage]);
 
   const useMultilineInput = isFirstTurn || (resolvedActivePage === "research" && questionBatch.length > 1);
-  const currentFocusLabel =
-    canReviewResearchAnswers
-      ? "Review or edit saved research answers."
-      : isResearchReadyForUi
-      ? "Research is complete. Click Next to go to the UI Agent."
-      : questionBatch.length > 1
-      ? `${questionBatch.length} prepared research questions`
-      : questionBatch[0]?.question ||
-        sessionState.questionFocus ||
-        "PromptPal is building the question thread.";
   const suggestedReplyGroups =
     isInBatchMode && currentBatchQuestion
       ? [
@@ -1188,52 +1163,6 @@ function ChatContent() {
               </div>
             </div>
 
-            <div className="rounded-[1.5rem] border border-slate-900/[0.08] bg-white/80 p-4 shadow-[0_16px_38px_rgba(29,39,53,0.05)]">
-              <p className="text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-slate-500">Current status</p>
-              <p className="mt-2 text-lg font-semibold tracking-tight text-slate-900">
-                {resolvedActivePage === "ui"
-                  ? "UI direction is active"
-                  : resolvedActivePage === "config"
-                    ? "Configuration is active"
-                    : resolvedActivePage === "prompt"
-                      ? "Prompt review is active"
-                      : isResearchReadyForUi
-                        ? "Research is complete"
-                        : hasVisibleMessages
-                        ? "Research agent is active"
-                        : "Waiting for the first brief"}
-              </p>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
-                <div className="rounded-[1.05rem] border border-slate-900/[0.08] bg-[#fbf7f1] px-4 py-3">
-                  <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-slate-500">Questions</p>
-                  <p className="mt-1 text-base font-semibold text-slate-900">
-                    {displayedQuestionNumber > 0 ? displayedQuestionLabel : "Not started"}
-                  </p>
-                  {displayedQuestionNumber > 0 && (
-                    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200/80">
-                      <div
-                        className="sidebar-progress-fill h-full rounded-full bg-slate-900"
-                        style={{
-                          width: `${questionProgressPercent}%`
-                        }}
-                      />
-                    </div>
-                  )}
-                </div>
-                <div className="rounded-[1.05rem] border border-slate-900/[0.08] bg-[#fbf7f1] px-4 py-3 sm:col-span-2 xl:col-span-1">
-                  <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-slate-500">Current focus</p>
-                  <p className="mt-1 text-sm font-semibold text-slate-900">
-                    {currentFocusLabel}
-                  </p>
-                  {activeBatchRange ? (
-                    <p className="mt-2 text-xs leading-5 text-slate-600">
-                      Active batch: {activeBatchRange}
-                    </p>
-                  ) : null}
-                </div>
-              </div>
-            </div>
-
             <Button variant="outline" className="h-11 w-full rounded-full border-slate-900/10 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50" disabled={!currentPrompt} onClick={handleExport}>
               <Download className="size-4" />
               Export prompt
@@ -1552,6 +1481,11 @@ function ChatContent() {
                       </div>
                       <div className="flex flex-wrap items-center justify-center gap-2">
                         <div className="rounded-full border border-slate-900/[0.08] bg-[#fbf7f1] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">{isLoading ? "Updating prompt" : hasVisibleMessages ? "Live session" : "Ready for idea"}</div>
+                        {resolvedActivePage === "research" && (
+                          <div className="rounded-full border border-slate-900/[0.08] bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
+                            {displayedQuestionLabel}
+                          </div>
+                        )}
                         {resolvedActivePage === "research" && canOpenUiPage && (
                           <Button
                             className="h-12 rounded-full bg-slate-900 px-8 text-base font-semibold text-white shadow-[0_18px_40px_rgba(29,39,53,0.18)] transition-all hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-[0_22px_50px_rgba(29,39,53,0.24)]"
