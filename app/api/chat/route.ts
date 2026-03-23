@@ -173,7 +173,7 @@ Use these exact IDs when one fits:
 {{CURRENT_DEFAULTS}}
 
 ## Research quota map
-Use the focus IDs below and meet these minimum counts on the FIRST research turn:
+Use the focus IDs below and meet these base counts on the FIRST research turn:
 {{QUESTION_QUOTAS}}
 
 ## Domain guidance
