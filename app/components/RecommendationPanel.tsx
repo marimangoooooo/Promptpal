@@ -40,6 +40,12 @@ type ControlRow = {
   recommendedEntries: RecommendationEntry[];
 };
 
+type ContextualFallbackRule = {
+  targetCategory: string;
+  when: Array<{ category: string; ids: string[] }>;
+  prefer: string[];
+};
+
 const CATEGORY_ORDER = [
   "Framework",
   "Language",
@@ -87,6 +93,39 @@ const STACK_FALLBACKS: Record<string, string[]> = {
   Hosting: ["vercel", "cloudflare", "railway"],
   DevOps: ["docker"],
 };
+
+const CONTEXTUAL_FALLBACK_RULES: ContextualFallbackRule[] = [
+  {
+    targetCategory: "Auth",
+    when: [{ category: "Database", ids: ["supabase"] }],
+    prefer: ["supabase-auth"],
+  },
+  {
+    targetCategory: "Database",
+    when: [{ category: "Auth", ids: ["supabase-auth"] }],
+    prefer: ["supabase"],
+  },
+  {
+    targetCategory: "Auth",
+    when: [{ category: "Framework", ids: ["nextjs"] }],
+    prefer: ["nextauth"],
+  },
+  {
+    targetCategory: "Hosting",
+    when: [{ category: "Framework", ids: ["nextjs"] }],
+    prefer: ["vercel"],
+  },
+  {
+    targetCategory: "Language",
+    when: [{ category: "Backend", ids: ["nodejs", "express", "nestjs"] }],
+    prefer: ["typescript"],
+  },
+  {
+    targetCategory: "Language",
+    when: [{ category: "Backend", ids: ["fastapi", "django"] }],
+    prefer: ["python"],
+  },
+];
 
 const OPTION_REASON_OVERRIDES: Record<string, string> = {
   codex: "Strong if you want direct repo-level implementation in a terminal-first workflow.",
@@ -154,7 +193,7 @@ function ChoiceChip({
       type="button"
       onClick={onClick}
       className={cn(
-        "rounded-full border px-3 py-1.5 text-sm font-medium transition-all",
+        "inline-flex min-h-[34px] items-center rounded-full border px-2.5 py-1 text-[0.84rem] font-medium transition-all",
         tone === "selected"
           ? "border-slate-900 bg-slate-900 text-white shadow-[0_10px_22px_rgba(29,39,53,0.16)]"
           : tone === "recommended"
@@ -198,7 +237,7 @@ function RecommendedEntryChip({
   return (
     <div
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border px-1 py-1 text-xs font-semibold transition-all",
+        "inline-flex min-h-[34px] items-center gap-1 rounded-full border px-1.25 py-0.75 text-[0.84rem] font-medium transition-all",
         active
           ? "border-slate-900 bg-slate-900 text-white shadow-[0_10px_22px_rgba(29,39,53,0.16)]"
           : "border-slate-900/[0.08] bg-white text-slate-700"
@@ -207,11 +246,76 @@ function RecommendedEntryChip({
       <button
         type="button"
         onClick={onClick}
-        className="rounded-full px-1.5 py-0.5 text-left"
+        className="rounded-full px-1.25 py-0.5 text-left leading-none"
       >
         {label}
       </button>
       <HintBubble text={reason} />
+    </div>
+  );
+}
+
+function ControlCard({
+  title,
+  recommendedEntries,
+  options,
+  selectedIds,
+  onSelect,
+}: {
+  title: string;
+  recommendedEntries: RecommendationEntry[];
+  options: Array<{ id: string; label: string }>;
+  selectedIds: string[];
+  onSelect: (id: string) => void;
+}) {
+  const alternateOptions = options.filter(
+    (option) => !recommendedEntries.some((entry) => entry.id === option.id)
+  );
+
+  return (
+    <div className="rounded-[0.8rem] border border-slate-900/[0.08] bg-white p-2.5">
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-[0.88rem] font-semibold tracking-tight text-slate-900">
+          {title}
+        </p>
+        <span className="text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-slate-400">
+          Recommended
+        </span>
+      </div>
+
+      <div className="mt-2 flex flex-wrap gap-1.5">
+        {recommendedEntries.length > 0 ? (
+          recommendedEntries.map((entry) => (
+            <RecommendedEntryChip
+              key={entry.id}
+              label={entry.label}
+              reason={entry.reason}
+              active={selectedIds.includes(entry.id)}
+              onClick={() => onSelect(entry.id)}
+            />
+          ))
+        ) : (
+          <p className="text-xs text-slate-500">Still deriving.</p>
+        )}
+      </div>
+
+      {alternateOptions.length > 0 && (
+        <div className="mt-2.5">
+          <p className="text-[0.58rem] font-semibold uppercase tracking-[0.16em] text-slate-400">
+            More options
+          </p>
+          <div className="mt-1.5 flex flex-wrap gap-1.5">
+            {alternateOptions.map((option) => (
+              <ChoiceChip
+                key={option.id}
+                label={option.label}
+                tone={selectedIds.includes(option.id) ? "selected" : "default"}
+                onClick={() => onSelect(option.id)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -341,6 +445,54 @@ function buildEntryReason({
     .trim();
 }
 
+function buildRecommendedIdsByCategory({
+  recommendedDatabase,
+  recommendedHosting,
+  groupedRecommendedStack,
+}: {
+  recommendedDatabase: RecommendationEntity | null;
+  recommendedHosting: RecommendationEntity | null;
+  groupedRecommendedStack: Record<string, RecommendationChip[]>;
+}) {
+  const idsByCategory: Record<string, string[]> = {};
+
+  const push = (category: string, id: string | null | undefined) => {
+    if (!id) return;
+
+    if (!idsByCategory[category]) {
+      idsByCategory[category] = [];
+    }
+
+    if (!idsByCategory[category].includes(id)) {
+      idsByCategory[category].push(id);
+    }
+  };
+
+  push("Database", resolveStackPreset(recommendedDatabase, "Database")?.id);
+  push("Hosting", resolveStackPreset(recommendedHosting, "Hosting")?.id);
+
+  Object.entries(groupedRecommendedStack).forEach(([category, items]) => {
+    items.forEach((item) => {
+      push(category, resolveStackPreset(item, category)?.id);
+    });
+  });
+
+  return idsByCategory;
+}
+
+function getContextualFallbackIds(
+  category: string,
+  recommendedIdsByCategory: Record<string, string[]>
+) {
+  return CONTEXTUAL_FALLBACK_RULES.filter((rule) => rule.targetCategory === category)
+    .filter((rule) =>
+      rule.when.every((condition) =>
+        condition.ids.some((id) => recommendedIdsByCategory[condition.category]?.includes(id))
+      )
+    )
+    .flatMap((rule) => rule.prefer);
+}
+
 export default function RecommendationPanel({
   recommendation,
   manualAgent,
@@ -386,6 +538,15 @@ export default function RecommendationPanel({
       return groups;
     }, {});
   }, [visibleStack]);
+  const recommendedIdsByCategory = useMemo(
+    () =>
+      buildRecommendedIdsByCategory({
+        recommendedDatabase,
+        recommendedHosting,
+        groupedRecommendedStack,
+      }),
+    [groupedRecommendedStack, recommendedDatabase, recommendedHosting]
+  );
 
   const normalizedProjectSummary = useMemo(() => compactSummary(projectSummary), [projectSummary]);
 
@@ -471,8 +632,13 @@ export default function RecommendationPanel({
           );
 
         const note = findRelevantNote(recommendedNotes, category);
+        const contextualFallbackIds = getContextualFallbackIds(
+          category,
+          recommendedIdsByCategory
+        );
         const recommendedEntries = uniqueIds([
           ...directRecommendedPresets.map((item) => item.id),
+          ...contextualFallbackIds,
           ...(STACK_FALLBACKS[category] ?? []),
         ])
           .slice(0, 3)
@@ -521,6 +687,7 @@ export default function RecommendationPanel({
     layoutLabel,
     normalizedProjectSummary,
     recommendedDatabase,
+    recommendedIdsByCategory,
     recommendedHosting,
     recommendedNotes,
     selectedStack,
@@ -562,7 +729,7 @@ export default function RecommendationPanel({
     Boolean(manualAgent || manualDatabase || manualHosting || manualStack.length);
 
   return (
-    <div className="rounded-[1.05rem] border border-slate-900/[0.08] bg-white p-3.5 shadow-sm">
+    <div className="rounded-[0.95rem] border border-slate-900/[0.08] bg-white p-3 shadow-sm">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <Badge
@@ -572,7 +739,7 @@ export default function RecommendationPanel({
             <Sparkles className="mr-1.5 size-3.5" />
             Recommendations
           </Badge>
-          <h2 className="mt-2 text-[0.96rem] font-semibold tracking-tight text-slate-900">
+          <h2 className="mt-1.5 text-[0.92rem] font-semibold tracking-tight text-slate-900">
             Best fit after research and UI direction
           </h2>
         </div>
@@ -591,23 +758,23 @@ export default function RecommendationPanel({
       </div>
 
       {!hasRecommendation ? (
-        <div className="mt-3 rounded-[0.95rem] border border-dashed border-slate-900/[0.12] bg-[#fbf7f1] px-3.5 py-3">
-          <p className="text-sm font-semibold tracking-tight text-slate-900">
+        <div className="mt-2.5 rounded-[0.85rem] border border-dashed border-slate-900/[0.12] bg-[#fbf7f1] px-3 py-2.5">
+          <p className="text-[0.9rem] font-semibold tracking-tight text-slate-900">
             Recommendations appear once PromptPal has enough signal.
           </p>
         </div>
       ) : (
         <>
-          <div className="mt-3 rounded-[0.95rem] border border-slate-900/[0.08] bg-[#fbf7f1] p-3">
+          <div className="mt-2.5 rounded-[0.85rem] border border-slate-900/[0.08] bg-[#fbf7f1] p-2.5">
             <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-slate-500">
               Selected setup
             </p>
             {selectedSummaryRows.length > 0 ? (
-              <div className="mt-2 flex flex-wrap items-center gap-2">
+              <div className="mt-2 flex flex-wrap items-center gap-1.5">
                 {selectedSummaryRows.map((row) => (
                   <div
                     key={row.label}
-                    className="inline-flex flex-wrap items-center gap-2 rounded-full border border-slate-900/[0.08] bg-white px-2.5 py-1.5 text-[0.72rem] text-slate-700"
+                    className="inline-flex flex-wrap items-center gap-1.5 rounded-full border border-slate-900/[0.08] bg-white px-2.5 py-1 text-[0.68rem] text-slate-700"
                   >
                     <span className="font-semibold uppercase tracking-[0.12em] text-slate-500">
                       {row.label}
@@ -621,116 +788,38 @@ export default function RecommendationPanel({
                 ))}
               </div>
             ) : (
-              <p className="mt-1 text-sm leading-5 text-slate-600">
+              <p className="mt-1 text-[0.88rem] leading-5 text-slate-600">
                 No manual selections yet. Use the recommended or alternate options below.
               </p>
             )}
           </div>
 
-          <div className="mt-3 rounded-[0.95rem] border border-slate-900/[0.08] bg-[#fbf7f1] p-3">
+          <div className="mt-2.5 rounded-[0.85rem] border border-slate-900/[0.08] bg-[#fbf7f1] p-2.5">
             <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-slate-500">
               Recommendation controls
             </p>
-            <p className="mt-1 text-sm leading-5 text-slate-600">
+            <p className="mt-1 text-[0.88rem] leading-5 text-slate-600">
               Grok&apos;s picks stay on the left. Your overrides stay on the right.
             </p>
 
-            <div className="mt-3 space-y-3">
-              <div className="border-t border-slate-900/[0.08] pt-3 first:border-t-0 first:pt-0">
-                <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-semibold tracking-tight text-slate-900">
-                        Build agent
-                      </p>
-                      <span className="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-slate-400">
-                        Recommended
-                      </span>
-                    </div>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {agentRecommendedEntries.length > 0 ? (
-                        agentRecommendedEntries.map((entry) => (
-                          <RecommendedEntryChip
-                            key={entry.id}
-                            label={entry.label}
-                            reason={entry.reason}
-                            active={selectedTools.includes(entry.id)}
-                            onClick={() => onToolSelect(entry.id)}
-                          />
-                        ))
-                      ) : (
-                        <p className="text-xs text-slate-500">Still deriving.</p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-2 lg:max-w-[52%] lg:justify-end">
-                    {agentOptions
-                      .filter((tool) => !agentRecommendedEntries.some((entry) => entry.id === tool.id))
-                      .map((tool) => (
-                      <ChoiceChip
-                        key={tool.id}
-                        label={tool.name}
-                        tone={
-                          selectedTools.includes(tool.id)
-                            ? "selected"
-                            : "default"
-                        }
-                        onClick={() => onToolSelect(tool.id)}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
+            <div className="mt-2.5 grid gap-2 xl:grid-cols-2">
+              <ControlCard
+                title="Build agent"
+                recommendedEntries={agentRecommendedEntries}
+                options={agentOptions.map((tool) => ({ id: tool.id, label: tool.name }))}
+                selectedIds={selectedTools}
+                onSelect={onToolSelect}
+              />
 
               {controlRows.map((row) => (
-                <div
+                <ControlCard
                   key={row.category}
-                  className="border-t border-slate-900/[0.08] pt-3 first:border-t-0 first:pt-0"
-                >
-                  <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm font-semibold tracking-tight text-slate-900">
-                          {row.category}
-                        </p>
-                        <span className="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-slate-400">
-                          Recommended
-                        </span>
-                      </div>
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {row.recommendedEntries.length > 0 ? (
-                          row.recommendedEntries.map((entry) => (
-                            <RecommendedEntryChip
-                              key={entry.id}
-                              label={entry.label}
-                              reason={entry.reason}
-                              active={selectedStack.includes(entry.id)}
-                              onClick={() => onStackToggle(entry.id)}
-                            />
-                          ))
-                        ) : (
-                          <p className="text-xs text-slate-500">Still deriving.</p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap gap-2 lg:max-w-[52%] lg:justify-end">
-                      {row.options
-                        .filter((option) => !row.recommendedEntries.some((entry) => entry.id === option.id))
-                        .map((option) => (
-                        <ChoiceChip
-                          key={option.id}
-                          label={option.label}
-                          tone={
-                            selectedStack.includes(option.id)
-                              ? "selected"
-                              : "default"
-                          }
-                          onClick={() => onStackToggle(option.id)}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
+                  title={row.category}
+                  recommendedEntries={row.recommendedEntries}
+                  options={row.options}
+                  selectedIds={selectedStack}
+                  onSelect={onStackToggle}
+                />
               ))}
             </div>
           </div>

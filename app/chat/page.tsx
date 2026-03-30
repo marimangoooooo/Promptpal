@@ -69,50 +69,50 @@ type StoredResearchBatch = {
 };
 
 const LOGO_OPTIONS: Option[] = [
-  { id: "top-left", label: "Top left", description: "Classic header placement." },
-  { id: "centered", label: "Centered", description: "Brand-first editorial feel." },
-  { id: "sidebar", label: "Sidebar header", description: "Works for dashboards." },
-  { id: "floating", label: "Floating mark", description: "Minimal shell." },
+  { id: "top-left", label: "Top left", description: "The logo sits in the upper-left corner, like most familiar websites." },
+  { id: "centered", label: "Centered", description: "The logo sits in the middle so the brand is the first thing people notice." },
+  { id: "sidebar", label: "Sidebar header", description: "The logo lives at the top of a left sidebar, like a dashboard." },
+  { id: "floating", label: "Floating mark", description: "A small logo mark floats on its own for a very clean, minimal look." },
 ];
 const PRIMARY_ACTION_OPTIONS: Option[] = [
-  { id: "top-right", label: "Top right CTA", description: "The main call-to-action stays visible in the header at all times." },
-  { id: "hero", label: "Hero center", description: "A prominent action centered in the hero section, ideal for landing pages." },
-  { id: "sticky-rail", label: "Sticky side rail", description: "A persistent side button for frequent actions like 'Add to cart' or 'Book now'." },
-  { id: "card-header", label: "Card header", description: "Action button inside each content card, close to the relevant item." },
+  { id: "top-right", label: "Top right CTA", description: "The main button stays in the upper-right header so it is easy to find." },
+  { id: "hero", label: "Hero center", description: "A big main button sits in the center of the first section of the page." },
+  { id: "sticky-rail", label: "Sticky side rail", description: "The button stays pinned on the side while people scroll." },
+  { id: "card-header", label: "Card header", description: "Each card gets its own action button right where the user is deciding." },
 ];
 const FOLLOW_OPTIONS: Option[] = [
-  { id: "profile-hero", label: "Profile hero", description: "On the user's profile page as a prominent follow or save button." },
-  { id: "sticky-header", label: "Sticky header", description: "Follows the user on scroll so it's always accessible." },
-  { id: "right-column", label: "Right column", description: "Placed in a sidebar column, visible but not dominant." },
-  { id: "listing-card", label: "Listing card", description: "Attached to each item card in browse and discovery views." },
+  { id: "profile-hero", label: "Profile hero", description: "A large follow or save button sits near the profile name and photo." },
+  { id: "sticky-header", label: "Sticky header", description: "The follow or save action stays visible in the top bar while scrolling." },
+  { id: "right-column", label: "Right column", description: "The action sits in a side column: easy to spot, but not too loud." },
+  { id: "listing-card", label: "Listing card", description: "Each recipe or post card has its own save button while people browse." },
 ];
 const NAV_OPTIONS: Option[] = [
-  { id: "top-nav", label: "Top navigation", description: "Simpler shell." },
-  { id: "left-rail", label: "Left rail", description: "Feature-rich app shell." },
-  { id: "split-pane", label: "Split pane", description: "Operational workflow." },
-  { id: "hybrid", label: "Hybrid", description: "Top nav plus contextual controls." },
+  { id: "top-nav", label: "Top navigation", description: "A simple navigation bar runs across the top of the screen." },
+  { id: "left-rail", label: "Left rail", description: "A sidebar on the left holds the main sections of the app." },
+  { id: "split-pane", label: "Split pane", description: "The screen stays divided, like a list on one side and details on the other." },
+  { id: "hybrid", label: "Hybrid", description: "A top bar handles the main sections, with extra controls inside the page." },
 ];
 const DESIGN_OPTIONS: DesignOption[] = [
-  { id: "minimalistic", label: "Minimalistic", description: "Low-noise.", weights: { shadcn: 3, radix: 2 } },
-  { id: "playful", label: "Playful", description: "Friendly and bright.", weights: { daisyui: 3, mantine: 1 } },
-  { id: "cute", label: "Cute", description: "Soft and charming.", weights: { daisyui: 3, mantine: 2 } },
-  { id: "premium", label: "Premium", description: "Polished and restrained.", weights: { shadcn: 2, radix: 2 } },
-  { id: "editorial", label: "Editorial", description: "Content-led.", weights: { shadcn: 2, mantine: 1 } },
-  { id: "bold", label: "Bold", description: "High contrast.", weights: { daisyui: 2, shadcn: 1 } },
-  { id: "futuristic", label: "Futuristic", description: "System-like.", weights: { radix: 2, shadcn: 2 } },
-  { id: "enterprise", label: "Enterprise", description: "Structured.", weights: { shadcn: 3, radix: 2 } },
-  { id: "luxurious", label: "Luxurious", description: "Elegant.", weights: { shadcn: 2, mantine: 2 } },
-  { id: "cozy", label: "Cozy", description: "Warm and approachable.", weights: { mantine: 2, daisyui: 2 } },
-  { id: "data-dense", label: "Data-dense", description: "High scanning efficiency.", weights: { shadcn: 3, radix: 2 } },
-  { id: "airy", label: "Airy", description: "Open spacing.", weights: { mantine: 2, shadcn: 1 } },
-  { id: "accessibility-first", label: "Accessibility-first", description: "Dependable primitives.", weights: { radix: 3, shadcn: 1 } },
-  { id: "conversion-focused", label: "Conversion-focused", description: "CTA clarity.", weights: { shadcn: 2, daisyui: 1 } },
-  { id: "community-driven", label: "Community-driven", description: "Social loops.", weights: { daisyui: 2, mantine: 1 } },
-  { id: "creator-led", label: "Creator-led", description: "Identity-forward.", weights: { mantine: 2, daisyui: 1 } },
-  { id: "mobile-first", label: "Mobile-first", description: "Touch-friendly.", weights: { mantine: 2, shadcn: 1 } },
-  { id: "trustworthy", label: "Trustworthy", description: "Stable and credible.", weights: { shadcn: 2, radix: 1 } },
-  { id: "elegant", label: "Elegant", description: "Balanced and refined.", weights: { shadcn: 2, mantine: 1 } },
-  { id: "experimental", label: "Experimental", description: "More expressive.", weights: { daisyui: 2, radix: 2 } },
+  { id: "minimalistic", label: "Minimalistic", description: "Clean and calm, with very little visual clutter.", weights: { shadcn: 3, radix: 2 } },
+  { id: "playful", label: "Playful", description: "Bright, friendly, and a little more expressive.", weights: { daisyui: 3, mantine: 1 } },
+  { id: "cute", label: "Cute", description: "Soft, rounded, and charming.", weights: { daisyui: 3, mantine: 2 } },
+  { id: "premium", label: "Premium", description: "Refined and polished, like a high-end product.", weights: { shadcn: 2, radix: 2 } },
+  { id: "editorial", label: "Editorial", description: "Text and imagery lead, like a magazine or story-led site.", weights: { shadcn: 2, mantine: 1 } },
+  { id: "bold", label: "Bold", description: "Stronger contrast, bigger statements, and more visual punch.", weights: { daisyui: 2, shadcn: 1 } },
+  { id: "futuristic", label: "Futuristic", description: "Sleek, digital, and a little sci-fi.", weights: { radix: 2, shadcn: 2 } },
+  { id: "enterprise", label: "Enterprise", description: "Structured, practical, and easy to scan at work.", weights: { shadcn: 3, radix: 2 } },
+  { id: "luxurious", label: "Luxurious", description: "Rich, elegant, and more upscale.", weights: { shadcn: 2, mantine: 2 } },
+  { id: "cozy", label: "Cozy", description: "Warm, welcoming, and relaxed.", weights: { mantine: 2, daisyui: 2 } },
+  { id: "data-dense", label: "Data-dense", description: "Fits a lot of information on screen without feeling random.", weights: { shadcn: 3, radix: 2 } },
+  { id: "airy", label: "Airy", description: "Lots of breathing room and open space.", weights: { mantine: 2, shadcn: 1 } },
+  { id: "accessibility-first", label: "Accessibility-first", description: "Designed to feel clear, readable, and comfortable for more people.", weights: { radix: 3, shadcn: 1 } },
+  { id: "conversion-focused", label: "Conversion-focused", description: "Built to guide people toward the main action quickly.", weights: { shadcn: 2, daisyui: 1 } },
+  { id: "community-driven", label: "Community-driven", description: "Made to feel social, participatory, and shared.", weights: { daisyui: 2, mantine: 1 } },
+  { id: "creator-led", label: "Creator-led", description: "Lets personality and brand voice stand out.", weights: { mantine: 2, daisyui: 1 } },
+  { id: "mobile-first", label: "Mobile-first", description: "Feels natural on a phone before anything else.", weights: { mantine: 2, shadcn: 1 } },
+  { id: "trustworthy", label: "Trustworthy", description: "Calm, dependable, and easy to take seriously.", weights: { shadcn: 2, radix: 1 } },
+  { id: "elegant", label: "Elegant", description: "Balanced, refined, and quietly polished.", weights: { shadcn: 2, mantine: 1 } },
+  { id: "experimental", label: "Experimental", description: "More unusual, expressive, and willing to break the usual pattern.", weights: { daisyui: 2, radix: 2 } },
 ];
 const UI_STACK_LABELS: Record<UiStackId, string> = {
   shadcn: "shadcn/ui + Tailwind",
@@ -177,6 +177,16 @@ function sortReplySegments(segments: string[]) {
 
     return left.localeCompare(right);
   });
+}
+
+function normalizeResearchAnswer(value: string) {
+  return value
+    .replace(/^Q\d+:\s*/i, "")
+    .split(/\n+/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .join("; ")
+    .trim();
 }
 
 function buildResearchBatchId(questions: ResearchQuestionBatchItem[]) {
@@ -308,10 +318,10 @@ function ChoiceGroup({
   onSelect: (value: string) => void;
 }) {
   return (
-    <section className="rounded-[1.25rem] border border-slate-900/[0.08] bg-white p-4">
-      <p className="text-sm font-semibold tracking-tight text-slate-900">{title}</p>
-      <p className="mt-1 text-sm leading-6 text-slate-600">{description}</p>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+    <section className="rounded-[1rem] border border-slate-900/[0.08] bg-white p-3">
+      <p className="text-[0.9rem] font-semibold tracking-tight text-slate-900">{title}</p>
+      <p className="mt-0.5 text-[0.82rem] leading-4.5 text-slate-600">{description}</p>
+      <div className="mt-2.5 grid gap-2 sm:grid-cols-2">
         {options.map((option) => {
           const isSelected = selected === option.id;
 
@@ -321,14 +331,14 @@ function ChoiceGroup({
               type="button"
               onClick={() => onSelect(option.id)}
               className={cn(
-                "rounded-[1rem] border px-4 py-3 text-left transition-all",
+                "rounded-[0.85rem] border px-3 py-2 text-left transition-all",
                 isSelected
                   ? "border-slate-900 bg-slate-900 text-white shadow-[0_18px_40px_rgba(29,39,53,0.16)]"
                   : "border-slate-900/[0.08] bg-[#fbf7f1] text-slate-800 hover:-translate-y-0.5 hover:border-slate-900/[0.16]"
               )}
             >
-              <p className="text-sm font-semibold tracking-tight">{option.label}</p>
-              <p className={cn("mt-1 text-sm leading-6", isSelected ? "text-white/82" : "text-slate-600")}>
+              <p className="text-[0.88rem] font-semibold tracking-tight">{option.label}</p>
+              <p className={cn("mt-0.5 text-[0.78rem] leading-4.5", isSelected ? "text-white/82" : "text-slate-600")}>
                 {option.description}
               </p>
             </button>
@@ -347,12 +357,12 @@ function PreferenceGrid({
   onToggle: (value: string) => void;
 }) {
   return (
-    <section className="rounded-[1.25rem] border border-slate-900/[0.08] bg-white p-4">
-      <p className="text-sm font-semibold tracking-tight text-slate-900">Design preferences</p>
-      <p className="mt-1 text-sm leading-6 text-slate-600">
+    <section className="rounded-[1rem] border border-slate-900/[0.08] bg-white p-3">
+      <p className="text-[0.9rem] font-semibold tracking-tight text-slate-900">Design preferences</p>
+      <p className="mt-0.5 text-[0.82rem] leading-4.5 text-slate-600">
         Pick the traits that should influence the UI recommendation.
       </p>
-      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <div className="mt-2.5 grid gap-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {DESIGN_OPTIONS.map((option) => {
           const isSelected = selected.includes(option.id);
 
@@ -362,7 +372,7 @@ function PreferenceGrid({
               type="button"
               onClick={() => onToggle(option.id)}
               className={cn(
-                "rounded-[1rem] border px-4 py-3 text-left transition-all",
+                "rounded-[0.85rem] border px-3 py-2 text-left transition-all",
                 isSelected
                   ? "border-slate-900 bg-slate-900 text-white shadow-[0_18px_40px_rgba(29,39,53,0.16)]"
                   : "border-slate-900/[0.08] bg-[#fbf7f1] text-slate-800 hover:-translate-y-0.5 hover:border-slate-900/[0.16]"
@@ -370,14 +380,14 @@ function PreferenceGrid({
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-sm font-semibold tracking-tight">{option.label}</p>
-                  <p className={cn("mt-1 text-sm leading-6", isSelected ? "text-white/82" : "text-slate-600")}>
+                  <p className="text-[0.88rem] font-semibold tracking-tight">{option.label}</p>
+                  <p className={cn("mt-0.5 text-[0.78rem] leading-4.5", isSelected ? "text-white/82" : "text-slate-600")}>
                     {option.description}
                   </p>
                 </div>
                 <div
                   className={cn(
-                    "mt-0.5 flex size-6 items-center justify-center rounded-full border text-xs font-semibold",
+                    "mt-0.5 flex size-5 items-center justify-center rounded-full border text-[0.64rem] font-semibold",
                     isSelected
                       ? "border-white/20 bg-white/12 text-white"
                       : "border-slate-900/10 bg-white text-transparent"
@@ -467,6 +477,14 @@ function ChatContent() {
 
   const { messages, sendMessage, status } = useChat({ transport });
   const isLoading = status === "streaming" || status === "submitted";
+
+  useEffect(() => {
+    document.body.dataset.chatpage = "true";
+
+    return () => {
+      delete document.body.dataset.chatpage;
+    };
+  }, []);
 
   useEffect(() => {
     const container = messagesScrollRef.current;
@@ -642,7 +660,7 @@ function ChatContent() {
     setIsWorkspaceExpanded(false);
   }, [resolvedActivePage]);
 
-  const useMultilineInput = isFirstTurn || (resolvedActivePage === "research" && questionBatch.length > 1);
+  const useMultilineInput = isFirstTurn || (resolvedActivePage === "research" && questionBatch.length > 0);
   const suggestedReplyGroups =
     isInBatchMode && currentBatchQuestion
       ? [
@@ -873,7 +891,7 @@ function ChatContent() {
     }
 
     const questionNumber = currentBatchQuestion.number;
-    const replyText = answerText.replace(/^Q\d+:\s*/i, "").trim();
+    const replyText = normalizeResearchAnswer(answerText);
     if (!replyText) return;
 
     const newAnswers = { ...resolvedBatchAnswers, [questionNumber]: replyText };
@@ -899,8 +917,7 @@ function ChatContent() {
     sendMessage({ text: allAnswers });
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
+  const submitComposerInput = () => {
     if (!trimmedInput || isLoading) return;
 
     if (isInBatchMode && currentBatchQuestion) {
@@ -919,40 +936,30 @@ function ChatContent() {
     setInputError(null);
   };
 
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    submitComposerInput();
+  };
+
   const handleSuggestedReply = (value: string) => {
     if (!value.trim() || isLoading) return;
 
-    // In batch mode: store answer locally and advance to next question
-    if (isInBatchMode && currentBatchQuestion) {
-      submitBatchAnswer(value);
-      return;
+    if (resolvedActivePage === "research") {
+      const segments = input
+        .split("\n")
+        .map((item) => item.trim())
+        .filter(Boolean);
+      const hasValue = segments.includes(value);
+      const nextSegments = hasValue
+        ? segments.filter((item) => item !== value)
+        : [...segments, value];
 
-      if (batchKey) {
-        setActiveBatchKey(batchKey);
-      }
-
-      const questionNumber = currentBatchQuestion!.number;
-      const replyText = value.replace(/^Q\d+:\s*/, ""); // Strip Q prefix if present
-      const newAnswers = { ...resolvedBatchAnswers, [questionNumber]: replyText };
-      setBatchAnswers(newAnswers);
-
-      if (resolvedBatchIndex < questionBatch.length - 1) {
-        // More questions to go — advance locally
-        setCurrentBatchIndex(resolvedBatchIndex + 1);
-      } else {
-        // Last question answered — compile all answers and send
-        const allAnswers = questionBatch
-          .map((q) => {
-            const answer = q.number === questionNumber ? replyText : newAnswers[q.number];
-            return `Q${q.number}: ${answer || "(skipped)"}`;
-          })
-          .join("\n");
-        sendMessage({ text: allAnswers });
-        setInput("");
-        setInputError(null);
-      }
+      setInput(sortReplySegments(nextSegments).join("\n"));
+      setInputError(null);
+      focusComposerInput();
       return;
     }
+
 
     // Non-batch mode: original behavior
     const segments = input
@@ -972,6 +979,18 @@ function ChatContent() {
 
     setInput(sortReplySegments(nextSegments).join("\n"));
     setInputError(null);
+    focusComposerInput();
+  };
+
+  const focusComposerInput = () => {
+    window.requestAnimationFrame(() => {
+      const target = textareaRef.current ?? inputRef.current;
+      if (!target) return;
+
+      const cursorPosition = target.value.length;
+      target.focus();
+      target.setSelectionRange(cursorPosition, cursorPosition);
+    });
   };
 
   const focusCustomReply = () => {
@@ -988,6 +1007,15 @@ function ChatContent() {
 
     const form = event.currentTarget.form;
     form?.requestSubmit();
+  };
+
+  const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== "Enter" || event.nativeEvent.isComposing) {
+      return;
+    }
+
+    event.preventDefault();
+    submitComposerInput();
   };
 
   const isSuggestedReplySelected = (value: string) =>
@@ -1080,8 +1108,8 @@ function ChatContent() {
 
   const placeholder = isFirstTurn
     ? "Describe the product idea, who it serves, the main workflow, and the outcome you want..."
-    : resolvedActivePage === "research" && questionBatch.length > 1
-      ? "Answer the current research question. Use a suggestion or type your own answer."
+    : resolvedActivePage === "research" && questionBatch.length > 0
+      ? "Answer the current research question. Select one or more suggestions or type your own answer."
       : resolvedActivePage === "research" && canOpenUiPage
         ? "Revise any research decision or sharpen the brief before moving forward..."
       : resolvedActivePage === "ui"
@@ -1094,20 +1122,20 @@ function ChatContent() {
   const useWorkspaceScroll = resolvedActivePage !== "research";
 
   return (
-    <div className="h-[100dvh] overflow-hidden px-3 py-3 md:px-4 md:py-4">
+    <div className="fixed inset-0 overflow-hidden px-3 py-3 md:px-4 md:py-4">
       <div className="mx-auto flex h-full max-w-[1920px] flex-col overflow-hidden rounded-[2rem] border border-slate-900/[0.08] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(248,240,229,0.92))] shadow-[0_28px_80px_rgba(29,39,53,0.08)] xl:flex-row">
-        <aside className="w-full shrink-0 overflow-y-auto border-b border-slate-900/[0.08] bg-[linear-gradient(180deg,rgba(250,244,235,0.92),rgba(255,255,255,0.82))] p-4 sm:p-5 xl:w-[350px] xl:border-b-0 xl:border-r">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 transition-colors hover:text-slate-900">
+        <aside className="flex w-full shrink-0 flex-col overflow-y-auto border-b border-slate-900/[0.08] bg-[linear-gradient(180deg,rgba(250,244,235,0.92),rgba(255,255,255,0.82))] p-3.5 sm:p-4 xl:w-[300px] xl:border-b-0 xl:border-r">
+          <Link href="/" className="inline-flex items-center gap-2 text-[0.95rem] font-semibold text-slate-700 transition-colors hover:text-slate-900">
             <ArrowLeft className="size-4" />
             Back to home
           </Link>
 
-          <div className="mt-4 space-y-4">
-            <div className="rounded-[1.6rem] border border-slate-900/[0.08] bg-white/85 p-4 shadow-[0_18px_40px_rgba(29,39,53,0.06)]">
-              <p className="text-[0.66rem] font-semibold uppercase tracking-[0.2em] text-slate-500">
+          <div className="mt-3 flex flex-1 flex-col gap-2.5">
+            <div className="rounded-[1.05rem] border border-slate-900/[0.08] bg-white/85 p-2.5 shadow-[0_12px_24px_rgba(29,39,53,0.05)]">
+              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-slate-500">
                 Agentic build path
               </p>
-              <div className="mt-4 space-y-3">
+              <div className="mt-2 space-y-1.5">
                 {path.map((step, index) => {
                   const isClickable = step.page === "research" || step.enabled;
                   const StepIcon = step.complete ? CheckCircle2 : Circle;
@@ -1119,7 +1147,7 @@ function ChatContent() {
                       disabled={!isClickable}
                       onClick={() => setActivePage(step.page)}
                       className={cn(
-                        "flex w-full items-start gap-3 rounded-[1.15rem] border px-4 py-3 text-left transition-all",
+                        "flex w-full items-start gap-2 rounded-[0.85rem] border px-2.5 py-1.75 text-left transition-all",
                         step.active
                           ? "border-slate-900 bg-slate-900 text-white shadow-[0_18px_40px_rgba(29,39,53,0.14)]"
                           : step.complete
@@ -1129,18 +1157,18 @@ function ChatContent() {
                               : "border-slate-900/[0.06] bg-white text-slate-400"
                       )}
                     >
-                      <div className={cn("mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full", step.active ? "bg-white/12" : step.complete ? "bg-white" : "bg-[#fbf7f1]")}>
+                      <div className={cn("mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full", step.active ? "bg-white/12" : step.complete ? "bg-white" : "bg-[#fbf7f1]")}>
                         {step.active ? (
-                          <div className="size-3 rounded-full bg-white" />
+                          <div className="size-2 rounded-full bg-white" />
                         ) : (
-                          <StepIcon className="size-4" />
+                          <StepIcon className="size-3" />
                         )}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold tracking-tight">
+                        <p className="text-[0.82rem] font-semibold tracking-tight">
                           {index + 1}. {step.label}
                         </p>
-                        <p className={cn("mt-1 text-sm leading-6", step.active ? "text-white/82" : "text-current/85")}>
+                        <p className={cn("mt-0.5 text-[0.8rem] leading-[1.25rem]", step.active ? "text-white/82" : "text-current/85")}>
                           {step.helper}
                         </p>
                       </div>
@@ -1150,7 +1178,7 @@ function ChatContent() {
               </div>
             </div>
 
-            <Button variant="outline" className="h-11 w-full rounded-full border-slate-900/10 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50" disabled={!currentPrompt} onClick={handleExport}>
+            <Button variant="outline" className="mt-auto h-8 w-full rounded-full border-slate-900/10 bg-white px-3.5 text-[0.84rem] font-semibold text-slate-700 hover:bg-slate-50" disabled={!currentPrompt} onClick={handleExport}>
               <Download className="size-4" />
               Export prompt
             </Button>
@@ -1234,54 +1262,54 @@ function ChatContent() {
                       </>
                     ) : (
                       <>
-                        <div className="mt-5 grid gap-4 xl:grid-cols-2">
+                        <div className="mt-3 grid gap-2.5 xl:grid-cols-2 2xl:grid-cols-4">
                           <ChoiceGroup title="Logo placement" description="Where should the brand live?" options={LOGO_OPTIONS} selected={logoPlacement} onSelect={setLogoPlacement} />
                           <ChoiceGroup title="Primary action placement" description="Where should the main call-to-action button sit?" options={PRIMARY_ACTION_OPTIONS} selected={primaryActionPlacement} onSelect={setPrimaryActionPlacement} />
                           <ChoiceGroup title="Follow / Save placement" description="Where should the follow or save action appear?" options={FOLLOW_OPTIONS} selected={followButtonPlacement} onSelect={setFollowButtonPlacement} />
                           <ChoiceGroup title="Navigation model" description="What should anchor the shell?" options={NAV_OPTIONS} selected={navigationStyle} onSelect={setNavigationStyle} />
                         </div>
 
-                        <div className="mt-5">
+                        <div className="mt-3">
                           <PreferenceGrid selected={selectedDesignPreferences} onToggle={handleTogglePreference} />
                         </div>
 
-                        <div className="mt-5 rounded-[1.25rem] border border-slate-900/[0.08] bg-white p-4 shadow-sm">
+                        <div className="mt-3 rounded-[1rem] border border-slate-900/[0.08] bg-white p-3 shadow-sm">
                           <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                             <div>
                               <Badge variant="secondary" className="rounded-full border border-slate-900/[0.08] bg-[#fbf7f1] px-3 py-1 text-[0.64rem] font-semibold uppercase tracking-[0.2em] text-slate-600">
                                 <Palette className="mr-1.5 size-3.5" />
                                 UI stack recommendation
                               </Badge>
-                              <h3 className="mt-3 text-lg font-semibold tracking-tight text-slate-900">
+                              <h3 className="mt-2 text-[0.96rem] font-semibold tracking-tight text-slate-900">
                                 {UI_STACK_LABELS[uiStackRecommendation.primary]}
                               </h3>
                             </div>
-                            <div className="rounded-full border border-slate-900/[0.08] bg-[#fbf7f1] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
+                            <div className="rounded-full border border-slate-900/[0.08] bg-[#fbf7f1] px-2.5 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-slate-600">
                               {uiStackRecommendation.alternatives.length > 0
-                                ? `Alternatives: ${uiStackRecommendation.alternatives.map((item) => UI_STACK_LABELS[item]).join(", ")}`
+                                ? `Alternatives: ${uiStackRecommendation.alternatives.map((item) => UI_STACK_LABELS[item]).join(", ")}` 
                                 : "Primary recommendation ready"}
                             </div>
                           </div>
 
-                          <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)]">
-                            <div className="rounded-[1.05rem] border border-slate-900/[0.08] bg-[#fbf7f1] p-4">
+                          <div className="mt-3 grid gap-2.5 xl:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+                            <div className="rounded-[0.85rem] border border-slate-900/[0.08] bg-[#fbf7f1] p-3">
                               <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-slate-500">Why it fits</p>
-                              <div className="mt-3 space-y-2">
+                              <div className="mt-2 space-y-1">
                                 {uiStackRecommendation.reasons.map((reason) => (
-                                  <p key={reason} className="text-sm leading-6 text-slate-600">
+                                  <p key={reason} className="text-[0.82rem] leading-4.5 text-slate-600">
                                     {reason}
                                   </p>
                                 ))}
                               </div>
                             </div>
-                            <div className="rounded-[1.05rem] border border-slate-900/[0.08] bg-white p-4">
+                            <div className="rounded-[0.85rem] border border-slate-900/[0.08] bg-white p-3">
                               <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-slate-500">Locked design signals</p>
-                              <div className="mt-3 flex flex-wrap gap-2">
+                              <div className="mt-2 flex flex-wrap gap-1.5">
                                 {(selectedDesignPreferences.length > 0
                                   ? selectedDesignPreferences.map((item) => DESIGN_OPTIONS.find((option) => option.id === item)?.label ?? item)
                                   : ["No design preferences selected yet"]
                                 ).map((item) => (
-                                  <span key={item} className="rounded-full border border-slate-900/[0.08] bg-[#fbf7f1] px-3 py-1 text-[0.72rem] font-medium text-slate-700">
+                                  <span key={item} className="rounded-full border border-slate-900/[0.08] bg-[#fbf7f1] px-2 py-1 text-[0.64rem] font-medium text-slate-700">
                                     {item}
                                   </span>
                                 ))}
@@ -1290,10 +1318,10 @@ function ChatContent() {
                           </div>
                         </div>
 
-                        <div className="mt-5 flex flex-col gap-3 rounded-[1.2rem] border border-slate-900/[0.08] bg-[#fbf7f1] p-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="mt-3 flex flex-col gap-2.5 rounded-[1rem] border border-slate-900/[0.08] bg-[#fbf7f1] p-3 sm:flex-row sm:items-center sm:justify-between">
                           <div>
-                            <p className="text-sm font-semibold tracking-tight text-slate-900">Lock the UI direction into the prompt</p>
-                            <p className="mt-1 text-sm leading-6 text-slate-600">The master prompt updates around the chosen layout, placements, and UI stack.</p>
+                            <p className="text-[0.9rem] font-semibold tracking-tight text-slate-900">Lock the UI direction into the prompt</p>
+                            <p className="mt-0.5 text-[0.82rem] leading-4.5 text-slate-600">The master prompt updates around the chosen layout, placements, and UI stack.</p>
                           </div>
                           <div className="flex flex-wrap items-center gap-2">
                             <Button variant="outline" className="h-10 rounded-full border-slate-900/20 bg-white px-4 text-sm font-semibold text-slate-800 hover:bg-slate-50" onClick={() => setUiStep("layout")}>
@@ -1316,27 +1344,27 @@ function ChatContent() {
               )}
 
               {resolvedActivePage === "config" && (
-                <section className="space-y-4">
-                  <div className="rounded-[1.2rem] border border-slate-900/[0.08] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,240,229,0.92))] p-3.5 shadow-[0_18px_36px_rgba(29,39,53,0.05)]">
+                <section className="space-y-3">
+                  <div className="rounded-[1.05rem] border border-slate-900/[0.08] bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(248,240,229,0.92))] p-3 shadow-[0_18px_36px_rgba(29,39,53,0.05)]">
                     <Badge variant="secondary" className="rounded-full border border-slate-900/[0.08] bg-white px-3 py-1 text-[0.64rem] font-semibold uppercase tracking-[0.2em] text-slate-600">
                       <Settings2 className="mr-1.5 size-3.5" />
                       Configuration
                     </Badge>
-                    <h2 className="mt-2 text-[0.96rem] font-semibold tracking-tight text-slate-900">
+                    <h2 className="mt-1.5 text-[0.92rem] font-semibold tracking-tight text-slate-900">
                       Finalize the build setup
                     </h2>
-                    <p className="mt-1 text-sm leading-6 text-slate-600">
+                    <p className="mt-1 text-[0.9rem] leading-5 text-slate-600">
                       PromptPal now surfaces the best-fit build recommendations after the research and UI stages.
                     </p>
                   </div>
 
                   <RecommendationPanel recommendation={recommendationState} manualAgent={manualAgent} manualDatabase={manualDatabase} manualHosting={manualHosting} manualStack={manualStack} selectedTools={selectedToolOverride} selectedStack={selectedStackOverride} onToolSelect={handleToolSelect} onStackToggle={handleStackToggle} onResetOverrides={handleResetOverrides} projectSummary={researchState.summary} layoutLabel={chosenLayout?.label ?? null} designSignals={selectedDesignPreferences.map((item) => DESIGN_OPTIONS.find((option) => option.id === item)?.label ?? item)} />
 
-                  <div className="rounded-[1rem] border border-slate-900/[0.08] bg-[#fbf7f1] p-3.5 shadow-sm">
+                  <div className="rounded-[0.95rem] border border-slate-900/[0.08] bg-[#fbf7f1] p-3 shadow-sm">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <div>
                         <p className="text-sm font-semibold tracking-tight text-slate-900">Move this setup into the final prompt</p>
-                        <p className="mt-1 text-sm leading-5 text-slate-600">If you want a different technical direction, ask for it in the message box below before continuing.</p>
+                        <p className="mt-1 text-[0.9rem] leading-5 text-slate-600">If you want a different technical direction, ask for it in the message box below before continuing.</p>
                       </div>
                       <div className="flex flex-wrap items-center gap-2">
                         <Button
@@ -1745,9 +1773,9 @@ function ChatContent() {
                       </div>
                     )}
 
-                    <div className="mt-5 rounded-[1.35rem] border border-slate-900/[0.08] bg-[#fbf7f1] p-3 sm:p-4">
-                      <form className="flex w-full items-end gap-3" onSubmit={handleSubmit}>
-                        <div className="flex-1 rounded-[1.35rem] border border-slate-900/10 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
+                    <div className="mt-4 rounded-[1.2rem] border border-slate-900/[0.08] bg-[#fbf7f1] p-2.5 sm:p-3">
+                      <form className="flex w-full items-start gap-2.5" onSubmit={handleSubmit}>
+                        <div className="flex-1 rounded-[1.2rem] border border-slate-900/10 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
                           {useMultilineInput ? (
                             <textarea
                               ref={textareaRef}
@@ -1758,9 +1786,9 @@ function ChatContent() {
                                 if (inputError) setInputError(null);
                               }}
                               placeholder={placeholder}
-                              className="min-h-[156px] w-full resize-none rounded-[1.35rem] border-0 bg-transparent px-5 py-4 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none"
+                              className="min-h-[112px] w-full resize-none rounded-[1.2rem] border-0 bg-transparent px-4 py-3 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none"
                               disabled={isLoading}
-                              rows={isFirstTurn ? 6 : 5}
+                              rows={isFirstTurn ? 4 : 4}
                               autoFocus
                             />
                           ) : (
@@ -1768,19 +1796,20 @@ function ChatContent() {
                               ref={inputRef}
                               type="text"
                               value={input}
+                              onKeyDown={handleInputKeyDown}
                               onChange={(event) => {
                                 setInput(event.target.value);
                                 if (inputError) setInputError(null);
                               }}
                               placeholder={placeholder}
-                              className="h-[52px] rounded-[1.35rem] border-0 bg-transparent px-5 text-base text-slate-900 placeholder:text-slate-400 focus-visible:ring-0"
+                              className="h-[46px] rounded-[1.2rem] border-0 bg-transparent px-4 text-base text-slate-900 placeholder:text-slate-400 focus-visible:ring-0"
                               disabled={isLoading}
                               autoFocus
                             />
                           )}
                         </div>
 
-                        <Button type="submit" size="icon" className={cn("size-[52px] rounded-[1.35rem] shadow-none transition-all", trimmedInput && !isLoading ? "bg-slate-900 text-white hover:-translate-y-0.5 hover:bg-slate-800" : "bg-slate-300 text-slate-500")} disabled={isLoading || !trimmedInput}>
+                        <Button type="button" onClick={submitComposerInput} size="icon" className={cn("mt-1 size-[46px] rounded-[1.2rem] shadow-none transition-all", trimmedInput && !isLoading ? "bg-slate-900 text-white hover:-translate-y-0.5 hover:bg-slate-800" : "bg-slate-300 text-slate-500")} disabled={isLoading || !trimmedInput}>
                           <Send className="size-5" />
                         </Button>
                       </form>
@@ -1794,7 +1823,7 @@ function ChatContent() {
 
             <aside className={cn("hidden xl:block shrink-0 overflow-hidden transition-[width,opacity] duration-300", isPromptDrawerOpen ? "w-[480px] opacity-100" : "w-0 opacity-0")}>
               <div className={cn("sticky top-0 h-[calc(100vh-2rem)] min-h-[720px] transition-transform duration-300", isPromptDrawerOpen ? "translate-x-0" : "translate-x-8")}>
-                <PromptPanel prompt={currentPrompt} isStreaming={isLoading} onOpenFullPrompt={handleOpenPromptModal} onHide={() => setIsPromptDrawerOpen(false)} />
+                <PromptPanel prompt={currentPrompt} isStreaming={isLoading} onOpenFullPrompt={handleOpenPromptModal} />
               </div>
             </aside>
           </div>
@@ -1802,7 +1831,7 @@ function ChatContent() {
       </div>
 
       <div className={cn("fixed inset-y-3 right-3 z-[80] w-[min(92vw,460px)] xl:hidden transition-transform duration-300", isPromptDrawerOpen ? "translate-x-0" : "pointer-events-none translate-x-[108%]")}>
-        <PromptPanel prompt={currentPrompt} isStreaming={isLoading} onOpenFullPrompt={handleOpenPromptModal} onHide={() => setIsPromptDrawerOpen(false)} />
+        <PromptPanel prompt={currentPrompt} isStreaming={isLoading} onOpenFullPrompt={handleOpenPromptModal} />
       </div>
 
       <PromptModal prompt={currentPrompt} isOpen={isPromptModalOpen} onClose={() => setIsPromptModalOpen(false)} />

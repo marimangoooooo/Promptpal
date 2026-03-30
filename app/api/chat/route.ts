@@ -305,6 +305,10 @@ PROMPT_STATE must be a real build prompt, not scratch notes. Keep it organized w
 - Do not anchor on example values from the hidden-block template. Those examples are placeholders, not defaults.
 - Never default to Supabase, Vercel, Next.js, or any single vendor out of habit.
 - Internally compare at least two realistic stack/database/hosting options before picking one.
+- Keep the recommendations internally compatible across framework, backend, database, auth, and hosting.
+- Prefer bundled pairings when they materially reduce stack sprawl.
+- If you recommend Supabase as the primary database and there is no strong reason against it, include Supabase Auth in the supporting stack.
+- If you recommend Next.js and auth is still open, prefer NextAuth over unrelated auth vendors unless research clearly points elsewhere.
 - If the requirements do not yet justify a database or hosting choice, return null for that field and note the open tradeoff briefly.
 - Use preset IDs only as internal mapping for the hidden state. User-facing reasoning should describe these as recommendations that fit the researched product, not as presets.
 - Recommendation notes should explicitly connect the final choices back to the research answers and the chosen UI direction when relevant.

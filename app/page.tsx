@@ -31,8 +31,8 @@ export default function Home() {
               <p className="max-w-xl text-[1rem] leading-7 text-white/84 sm:text-[1.08rem]">
                 Because your idea deserves better than a badly written prompt.
               </p>
-              <div className="max-w-2xl rounded-[1.35rem] border border-white/18 bg-black/74 px-5 py-4 shadow-[0_22px_60px_rgba(0,0,0,0.32)] backdrop-blur-sm">
-                <p className="text-sm leading-7 text-white/80 sm:text-base">
+              <div className="max-w-[420px] rounded-[0.9rem] border border-white/18 bg-black/74 px-3 py-2 shadow-[0_22px_60px_rgba(0,0,0,0.32)] backdrop-blur-sm sm:px-3 sm:py-2.5">
+                <p className="text-[0.8rem] leading-5 text-white/78 sm:text-[0.84rem]">
                   PromptPal is an AI-powered prompt studio that refines and improves a user&apos;s initial
                   idea by asking targeted follow-up questions based on research. It also guides users
                   toward the right UI and tech stack decisions, turning a rough concept into a

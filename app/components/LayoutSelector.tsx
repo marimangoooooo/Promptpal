@@ -43,8 +43,8 @@ function LayoutPreview({
 
   if (layoutId === "saas-command-center") {
     return (
-      <div className={cn("relative h-40 overflow-hidden rounded-[1.15rem] border p-3", frameClass)}>
-        <div className="flex h-full gap-3">
+      <div className={cn("relative h-28 overflow-hidden rounded-[0.9rem] border p-2", frameClass)}>
+        <div className="flex h-full gap-2.5">
           <div className={cn("flex w-12 flex-col gap-2 rounded-[0.9rem] p-2", chromeClass)}>
             <div className={cn("h-3 rounded-full", accentClass)} />
             <div className={cn("h-2 rounded-full", mutedClass)} />
@@ -76,15 +76,15 @@ function LayoutPreview({
             </div>
           </div>
         </div>
-        <div className="pointer-events-none absolute bottom-3 left-3">{tag("Sidebar")}</div>
+        <div className="pointer-events-none absolute bottom-2.5 left-2.5">{tag("Sidebar")}</div>
       </div>
     );
   }
 
   if (layoutId === "conversion-funnel") {
     return (
-      <div className={cn("relative h-40 overflow-hidden rounded-[1.15rem] border p-3", frameClass)}>
-        <div className={cn("rounded-[1rem] p-3", chromeClass)}>
+      <div className={cn("relative h-28 overflow-hidden rounded-[0.9rem] border p-2", frameClass)}>
+        <div className={cn("rounded-[0.95rem] p-2.5", chromeClass)}>
           <div className="flex items-center justify-between">
             {tag("Logo")}
             {tag("Get started")}
@@ -111,7 +111,7 @@ function LayoutPreview({
 
   if (layoutId === "premium-marketplace") {
     return (
-      <div className={cn("relative h-40 overflow-hidden rounded-[1.15rem] border p-3", frameClass)}>
+      <div className={cn("relative h-28 overflow-hidden rounded-[0.9rem] border p-2", frameClass)}>
         <div className={cn("flex h-8 items-center justify-between rounded-[0.9rem] px-3", chromeClass)}>
           {tag("Logo")}
           {tag("Search")}
@@ -139,8 +139,8 @@ function LayoutPreview({
 
   if (layoutId === "service-booking") {
     return (
-      <div className={cn("relative h-40 overflow-hidden rounded-[1.15rem] border p-3", frameClass)}>
-        <div className="grid h-full grid-cols-[1fr_0.92fr] gap-3">
+      <div className={cn("relative h-28 overflow-hidden rounded-[0.9rem] border p-2", frameClass)}>
+        <div className="grid h-full grid-cols-[1fr_0.92fr] gap-2.5">
           <div className={cn("rounded-[1rem] p-3", chromeClass)}>
             {tag("Logo")}
             <div className={cn("mt-3 h-3 w-4/5 rounded-full", accentClass)} />
@@ -166,7 +166,7 @@ function LayoutPreview({
 
   if (layoutId === "community-editorial") {
     return (
-      <div className={cn("relative h-40 overflow-hidden rounded-[1.15rem] border p-3", frameClass)}>
+      <div className={cn("relative h-28 overflow-hidden rounded-[0.9rem] border p-2", frameClass)}>
         <div className={cn("flex h-8 items-center justify-between rounded-[0.9rem] px-3", chromeClass)}>
           {tag("Logo")}
           {tag("Community")}
@@ -194,7 +194,7 @@ function LayoutPreview({
   }
 
   return (
-    <div className={cn("relative h-40 overflow-hidden rounded-[1.15rem] border p-3", frameClass)}>
+    <div className={cn("relative h-28 overflow-hidden rounded-[0.9rem] border p-2", frameClass)}>
       <div className={cn("flex h-8 items-center justify-between rounded-[0.9rem] px-3", chromeClass)}>
         {tag("Logo")}
         {tag("Actions")}
@@ -231,7 +231,7 @@ export default function LayoutSelector({
   );
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+    <div className="grid gap-2.5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
       {LAYOUT_PRESETS.map((layout) => {
         const isSelected = selected === layout.id;
         const recommendationSummary = recommendedById.get(layout.id);
@@ -242,14 +242,14 @@ export default function LayoutSelector({
             type="button"
             onClick={() => onSelect(layout.id)}
             className={cn(
-              "group rounded-[1.55rem] border p-4 text-left transition-all duration-300",
+              "group rounded-[1.05rem] border p-3 text-left transition-all duration-300",
               isSelected
                 ? "border-slate-900 bg-slate-900 text-white shadow-[0_22px_55px_rgba(29,39,53,0.22)]"
                 : "border-slate-900/[0.08] bg-white hover:-translate-y-1 hover:border-slate-900/[0.16] hover:shadow-[0_18px_42px_rgba(29,39,53,0.08)]"
             )}
           >
             <div className="flex items-start justify-between gap-3">
-              <h3 className="text-base font-semibold tracking-tight">
+              <h3 className="text-[0.88rem] font-semibold tracking-tight">
                 {layout.name}
               </h3>
 
@@ -285,14 +285,14 @@ export default function LayoutSelector({
               </div>
             </div>
 
-            <div className="mt-3">
+            <div className="mt-2">
               <LayoutPreview layoutId={layout.id} isSelected={isSelected} />
             </div>
 
-            <div className="mt-3 space-y-3">
+            <div className="mt-2 space-y-2">
               <p
                 className={cn(
-                  "text-sm leading-6",
+                  "text-[0.8rem] leading-4.5",
                   isSelected ? "text-white/84" : "text-slate-600"
                 )}
               >
@@ -304,7 +304,7 @@ export default function LayoutSelector({
                   <span
                     key={item}
                     className={cn(
-                      "rounded-full px-3 py-1 text-[0.68rem] font-medium",
+                      "rounded-full px-2 py-0.5 text-[0.6rem] font-medium",
                       isSelected
                         ? "bg-white/12 text-white"
                         : "border border-slate-900/[0.08] bg-white text-slate-700"

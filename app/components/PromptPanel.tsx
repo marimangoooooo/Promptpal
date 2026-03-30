@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Check, Copy, FileText, PanelRightOpen, PanelRightClose } from "lucide-react";
+import { Check, Copy, FileText, PanelRightOpen } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Button } from "@/components/ui/button";
@@ -10,14 +10,12 @@ interface PromptPanelProps {
   prompt: string;
   isStreaming: boolean;
   onOpenFullPrompt: () => void;
-  onHide?: () => void;
 }
 
 export default function PromptPanel({
   prompt,
   isStreaming,
   onOpenFullPrompt,
-  onHide,
 }: PromptPanelProps) {
   const [copied, setCopied] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -100,17 +98,6 @@ export default function PromptPanel({
             </Button>
           )}
 
-          {onHide && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-8 rounded-full border-slate-900/10 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-              onClick={onHide}
-            >
-              <PanelRightClose className="size-3.5" />
-              Hide
-            </Button>
-          )}
         </div>
       </div>
 
