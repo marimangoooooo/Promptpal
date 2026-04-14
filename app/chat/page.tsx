@@ -661,6 +661,17 @@ function ChatContent() {
   }, [resolvedActivePage]);
 
   const useMultilineInput = isFirstTurn || (resolvedActivePage === "research" && questionBatch.length > 0);
+
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea || !useMultilineInput) return;
+
+    textarea.style.height = "0px";
+    const nextHeight = Math.min(textarea.scrollHeight, 260);
+    textarea.style.height = `${nextHeight}px`;
+    textarea.style.overflowY = textarea.scrollHeight > 260 ? "auto" : "hidden";
+  }, [input, useMultilineInput]);
+
   const suggestedReplyGroups =
     isInBatchMode && currentBatchQuestion
       ? [
@@ -702,21 +713,12 @@ function ChatContent() {
 
   const path = [
     {
-      key: "idea",
-      label: "Your Idea",
-      helper: hasVisibleMessages ? "Brief captured" : "Start here",
-      page: "research" as const,
-      enabled: true,
-      active: !hasVisibleMessages,
-      complete: hasVisibleMessages,
-    },
-    {
       key: "research",
       label: "Research Agent",
-      helper: canOpenUiPage ? "Enough context gathered" : hasVisibleMessages ? "Clarifying what matters" : "Waiting for your brief",
+      helper: !hasVisibleMessages ? "Start here" : canOpenUiPage ? "Enough context gathered" : "Clarifying what matters",
       page: "research" as const,
-      enabled: hasVisibleMessages,
-      active: hasVisibleMessages && !canOpenUiPage && resolvedActivePage === "research",
+      enabled: true,
+      active: resolvedActivePage === "research" && !canOpenUiPage,
       complete: canOpenUiPage,
     },
     {
@@ -1120,6 +1122,8 @@ function ChatContent() {
           ? "Request one final prompt change..."
           : "Answer the current question or sharpen the brief...";
   const useWorkspaceScroll = resolvedActivePage !== "research";
+  const showConversationArea = hasVisibleMessages || isLoading;
+  const centeredComposerWidth = "mx-auto w-full max-w-[960px]";
 
   return (
     <div className="fixed inset-0 overflow-hidden px-3 py-3 md:px-4 md:py-4">
@@ -1131,11 +1135,12 @@ function ChatContent() {
           </Link>
 
           <div className="mt-3 flex flex-1 flex-col gap-2.5">
-            <div className="rounded-[1.05rem] border border-slate-900/[0.08] bg-white/85 p-2.5 shadow-[0_12px_24px_rgba(29,39,53,0.05)]">
+            <div>
               <p className="text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-slate-500">
                 Agentic build path
               </p>
-              <div className="mt-2 space-y-1.5">
+              <div className="relative mt-3 space-y-1 pl-7">
+                <div aria-hidden className="absolute bottom-2 left-[0.55rem] top-2 w-px bg-slate-900/[0.08]" />
                 {path.map((step, index) => {
                   const isClickable = step.page === "research" || step.enabled;
                   const StepIcon = step.complete ? CheckCircle2 : Circle;
@@ -1147,17 +1152,26 @@ function ChatContent() {
                       disabled={!isClickable}
                       onClick={() => setActivePage(step.page)}
                       className={cn(
-                        "flex w-full items-start gap-2 rounded-[0.85rem] border px-2.5 py-1.75 text-left transition-all",
+                        "relative flex w-full items-start gap-3 px-0 py-1.5 text-left transition-colors",
                         step.active
-                          ? "border-slate-900 bg-slate-900 text-white shadow-[0_18px_40px_rgba(29,39,53,0.14)]"
+                          ? "text-slate-900"
                           : step.complete
-                            ? "border-emerald-200 bg-emerald-50 text-slate-900"
+                            ? "text-slate-800"
                             : isClickable
-                              ? "border-slate-900/[0.08] bg-white text-slate-800 hover:-translate-y-0.5"
-                              : "border-slate-900/[0.06] bg-white text-slate-400"
+                              ? "text-slate-700 hover:text-slate-900"
+                              : "text-slate-400"
                       )}
                     >
-                      <div className={cn("mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full", step.active ? "bg-white/12" : step.complete ? "bg-white" : "bg-[#fbf7f1]")}>
+                      <div
+                        className={cn(
+                          "absolute left-[-1.75rem] top-2.5 flex size-[1.15rem] shrink-0 items-center justify-center rounded-full border",
+                          step.active
+                            ? "border-slate-900 bg-slate-900 text-white"
+                            : step.complete
+                              ? "border-emerald-500 bg-emerald-500 text-white"
+                              : "border-slate-900/[0.12] bg-[#fbf7f1] text-slate-400"
+                        )}
+                      >
                         {step.active ? (
                           <div className="size-2 rounded-full bg-white" />
                         ) : (
@@ -1168,7 +1182,7 @@ function ChatContent() {
                         <p className="text-[0.82rem] font-semibold tracking-tight">
                           {index + 1}. {step.label}
                         </p>
-                        <p className={cn("mt-0.5 text-[0.8rem] leading-[1.25rem]", step.active ? "text-white/82" : "text-current/85")}>
+                        <p className={cn("mt-0.5 text-[0.8rem] leading-[1.25rem]", step.active ? "text-slate-600" : "text-current/85")}>
                           {step.helper}
                         </p>
                       </div>
@@ -1193,15 +1207,8 @@ function ChatContent() {
                 useWorkspaceScroll ? "overflow-y-auto pr-1" : "overflow-hidden"
               )}
             >
-              <header className="border-b border-slate-900/[0.08] pb-4">
-                <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Badge className="rounded-full bg-slate-900 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-white">
-                      {MODEL_DISPLAY_NAME}
-                    </Badge>
-                  </div>
-
-                  <div className="flex flex-wrap items-center gap-2">
+              <header className="pb-4">
+                <div className="flex flex-wrap items-center justify-end gap-2">
                     {resolvedActivePage !== "research" && hasVisibleMessages && (
                       <Button
                         variant="outline"
@@ -1217,7 +1224,6 @@ function ChatContent() {
                       {isPromptDrawerOpen ? <PanelRightClose className="size-4" /> : <PanelRightOpen className="size-4" />}
                       {isPromptDrawerOpen ? "Hide live view" : "Open live view"}
                     </Button>
-                  </div>
                 </div>
               </header>
 
@@ -1449,7 +1455,7 @@ function ChatContent() {
 
               <section
                 className={cn(
-                  "rounded-[1.8rem] border border-slate-900/[0.08] bg-white/[0.82] p-4 shadow-[0_24px_60px_rgba(29,39,53,0.06)]",
+                  "p-4",
                   useWorkspaceScroll ? "flex flex-col" : "flex min-h-0 flex-1 flex-col overflow-hidden"
                 )}
               >
@@ -1474,7 +1480,7 @@ function ChatContent() {
                   </button>
                 ) : (
                   <>
-                    <div className="flex flex-col gap-3">
+                    <div className={cn("flex flex-col gap-3", !showConversationArea && "pt-[7.5rem]")}>
                       {resolvedActivePage !== "research" && (
                         <div className="flex justify-end">
                           <Button
@@ -1488,39 +1494,34 @@ function ChatContent() {
                         </div>
                       )}
 
-                      <div className="flex flex-col items-center gap-4 text-center">
-                      <div className="max-w-3xl">
-                        <p className="text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-slate-500">Main agent workspace</p>
-                        <h2 className="mt-2 text-[1.45rem] font-semibold tracking-tight text-slate-900 sm:text-[1.8rem]">What is your idea?</h2>
-                        <p className="mt-2 text-sm leading-7 text-slate-600 sm:text-base">PromptPal researches the product properly, asks what still changes the build, then hands you into UI and configuration so the final prompt arrives closer to implementation-ready.</p>
-                      </div>
-                      <div className="flex flex-wrap items-center justify-center gap-2">
-                        <div className="rounded-full border border-slate-900/[0.08] bg-[#fbf7f1] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">{isLoading ? "Updating prompt" : hasVisibleMessages ? "Live session" : "Ready for idea"}</div>
-                        {resolvedActivePage === "research" && (
-                          <div className="rounded-full border border-slate-900/[0.08] bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
-                            {displayedQuestionLabel}
+                      <div className={cn("flex flex-col items-center text-center", centeredComposerWidth)}>
+                        <div className="w-full">
+                          <h2 className="text-[2.35rem] font-semibold leading-[0.95] tracking-[-0.045em] text-slate-900 sm:text-[3rem] lg:text-[3.5rem]">
+                            What is your idea?
+                          </h2>
+                        </div>
+                        {resolvedActivePage === "research" && canOpenUiPage && (
+                          <div className="mt-4 flex justify-center">
+                            <Button
+                              className="h-12 rounded-full bg-slate-900 px-8 text-base font-semibold text-white shadow-[0_18px_40px_rgba(29,39,53,0.18)] transition-all hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-[0_22px_50px_rgba(29,39,53,0.24)]"
+                              onClick={() => setActivePage("ui")}
+                            >
+                              Next: UI Agent
+                              <ArrowRight className="size-5" />
+                            </Button>
                           </div>
                         )}
-                        {resolvedActivePage === "research" && canOpenUiPage && (
-                          <Button
-                            className="h-12 rounded-full bg-slate-900 px-8 text-base font-semibold text-white shadow-[0_18px_40px_rgba(29,39,53,0.18)] transition-all hover:-translate-y-0.5 hover:bg-slate-800 hover:shadow-[0_22px_50px_rgba(29,39,53,0.24)]"
-                            onClick={() => setActivePage("ui")}
-                          >
-                            Next: UI Agent
-                            <ArrowRight className="size-5" />
-                          </Button>
-                        )}
                       </div>
                     </div>
-                    </div>
 
-                    <div
-                      ref={messagesScrollRef}
-                      className={cn(
-                        "mt-5 flex flex-col gap-4 pr-1",
-                        useWorkspaceScroll ? "max-h-[42vh] overflow-y-auto" : "min-h-0 flex-1 overflow-y-auto"
-                      )}
-                    >
+                    {showConversationArea && (
+                      <div
+                        ref={messagesScrollRef}
+                        className={cn(
+                          "mt-5 flex flex-col gap-4 pr-1",
+                          useWorkspaceScroll ? "max-h-[42vh] overflow-y-auto" : "min-h-0 flex-1 overflow-y-auto"
+                        )}
+                      >
                   {renderableMessages.map((message, index) => (
                     <ChatMessage
                       key={message.id || index}
@@ -1562,7 +1563,8 @@ function ChatContent() {
                         </div>
                       </div>
                     )}
-                    </div>
+                      </div>
+                    )}
 
                     {resolvedActivePage === "research" && canOpenUiPage && (
                       <div className="mt-5 rounded-[1.2rem] border border-emerald-200 bg-emerald-50/90 p-4 shadow-[0_16px_34px_rgba(29,39,53,0.08)]">
@@ -1773,9 +1775,9 @@ function ChatContent() {
                       </div>
                     )}
 
-                    <div className="mt-4 rounded-[1.2rem] border border-slate-900/[0.08] bg-[#fbf7f1] p-2.5 sm:p-3">
-                      <form className="flex w-full items-start gap-2.5" onSubmit={handleSubmit}>
-                        <div className="flex-1 rounded-[1.2rem] border border-slate-900/10 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
+                    <div className={cn(centeredComposerWidth, showConversationArea ? "mt-4" : "mt-16")}>
+                      <form className="flex w-full items-start" onSubmit={handleSubmit}>
+                        <div className="relative flex-1 rounded-[1.2rem] border border-slate-900/10 bg-white shadow-[0_4px_20px_rgba(29,39,53,0.06)]">
                           {useMultilineInput ? (
                             <textarea
                               ref={textareaRef}
@@ -1786,9 +1788,9 @@ function ChatContent() {
                                 if (inputError) setInputError(null);
                               }}
                               placeholder={placeholder}
-                              className="min-h-[112px] w-full resize-none rounded-[1.2rem] border-0 bg-transparent px-4 py-3 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none"
+                              className="max-h-[260px] min-h-[64px] w-full resize-none rounded-[1.2rem] border-0 bg-transparent px-4 py-3 pr-16 text-base leading-6 text-slate-900 placeholder:text-slate-400 focus:outline-none"
                               disabled={isLoading}
-                              rows={isFirstTurn ? 4 : 4}
+                              rows={1}
                               autoFocus
                             />
                           ) : (
@@ -1802,16 +1804,15 @@ function ChatContent() {
                                 if (inputError) setInputError(null);
                               }}
                               placeholder={placeholder}
-                              className="h-[46px] rounded-[1.2rem] border-0 bg-transparent px-4 text-base text-slate-900 placeholder:text-slate-400 focus-visible:ring-0"
+                              className="h-[46px] rounded-[1.2rem] border-0 bg-transparent px-4 pr-16 text-base text-slate-900 placeholder:text-slate-400 focus-visible:ring-0"
                               disabled={isLoading}
                               autoFocus
                             />
                           )}
+                          <Button type="button" onClick={submitComposerInput} size="icon" className={cn("absolute right-2 size-[38px] rounded-xl shadow-none transition-all", useMultilineInput ? "top-6" : "top-1.5", trimmedInput && !isLoading ? "bg-slate-900 text-white hover:bg-slate-800" : "bg-slate-200 text-slate-400")} disabled={isLoading || !trimmedInput}>
+                            <Send className="size-4" />
+                          </Button>
                         </div>
-
-                        <Button type="button" onClick={submitComposerInput} size="icon" className={cn("mt-1 size-[46px] rounded-[1.2rem] shadow-none transition-all", trimmedInput && !isLoading ? "bg-slate-900 text-white hover:-translate-y-0.5 hover:bg-slate-800" : "bg-slate-300 text-slate-500")} disabled={isLoading || !trimmedInput}>
-                          <Send className="size-5" />
-                        </Button>
                       </form>
 
                       {inputError && <p className="mt-2 px-1 text-xs font-semibold text-rose-600">{inputError}</p>}

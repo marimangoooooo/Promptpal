@@ -1,8 +1,8 @@
 # PromptPal
 
-PromptPal is an AI-powered, research-first prompt studio for software projects. A user starts with a real product brief, PromptPal runs a deeper clarification pass, moves into UI direction, recommends a technical setup, and keeps a build-ready master prompt updated through the whole flow.
+PromptPal is an AI-powered, research-first prompt studio for software projects. A user starts with a real product brief, PromptPal deepens it through clarification, defines UI direction, suggests a technical setup, and maintains a build-ready master prompt throughout the process.
 
-It is built for people who already know roughly what they want to make, but want a stronger implementation prompt before handing the project to a coding agent.
+It’s built for people who already know roughly what they want to make, but want a stronger, more structured implementation prompt before handing it off to a coding agent.
 
 ## What It Does
 
