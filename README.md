@@ -1,133 +1,144 @@
 # PromptPal
 
-PromptPal is an AI-powered, research-first prompt studio for software projects. A user starts with a real product brief, PromptPal deepens it through clarification, defines UI direction, suggests a technical setup, and maintains a build-ready master prompt throughout the process.
+PromptPal is a research-first prompt studio for software projects.
 
-It’s built for people who already know roughly what they want to make, but want a stronger, more structured implementation prompt before handing it off to a coding agent.
+Instead of asking for a vague one-line idea and jumping straight into code, PromptPal turns a rough product brief into a stronger build-ready prompt through a staged workflow:
 
-## What It Does
+1. research the product
+2. shape the UI direction
+3. lock the implementation setup
+4. export the final prompt
 
-- requires a meaningful first brief before research starts
-- runs a `20+` adaptive research pass while showing one question at a time
-- lets users review and edit saved research answers later
-- separates the flow into research, UI, configuration, and final prompt stages
-- keeps a live master prompt updated in the background
-- recommends stack and execution options from the researched product
-- lets users override recommendations without losing the original AI picks
-- shows a direct prompt preview on the final page
-- opens the full prompt in a large dedicated modal
+The app is built with Next.js, React, TypeScript, Tailwind CSS, and the Vercel AI SDK, and it currently runs on xAI's Grok models through an OpenAI-compatible endpoint.
+
+## What PromptPal Does
+
+- accepts a meaningful product brief from the user
+- generates a full research batch up front, then presents questions one at a time
+- keeps a live master prompt updated as the conversation evolves
+- separates the workflow into Research, UI, Configuration, and Prompt stages
+- recommends layouts, technical stack choices, and build paths from the research context
+- lets users override recommendations without losing the reasoning behind them
+- supports reviewing and editing saved research answers
+- shows a live prompt view plus a larger full-prompt modal
 - exports the final prompt as Markdown
 
-## Workspace Flow
+## Product Flow
 
-1. The user opens the chat workspace and submits a substantial project brief.
-2. PromptPal prepares a deeper research batch and shows the interview one question at a time.
-3. Research answers can be reviewed and edited without replaying the entire interview.
-4. After research is complete, the user moves into the UI stage to choose layout and interface direction.
-5. In configuration, PromptPal shows recommended options on the left, alternate options on the right, and a compact selected-setup summary at the top.
-6. The final stage shows the current prompt directly on the page, with actions to open the full view or export it.
+### 1. Landing page
 
-## Current Product Behavior
+The home page introduces PromptPal and rotates through sample project ideas to show how a rough brief can become a sharper implementation prompt.
 
-### Research
+### 2. Research workspace
 
-- the initial research batch targets at least `20` questions
-- research questions use stable `topicId` metadata internally
-- food and recipe briefs trigger extra leftover-first research and ranking guardrails
-- saved research answers can be reviewed, edited, and re-applied later
-- question progress is shown inside the main chat workspace instead of a separate status card
+The `/chat` route is the main workspace.
 
-### UI Stage
+Users start by describing the product idea. PromptPal then:
 
-- recommended layout drafts are shown before implementation choices
-- users can refine logo placement, primary action placement, navigation, and design preferences
-- UI direction can be locked into the master prompt before moving on
-- outside research, the main workspace can be collapsed and reopened to save room
+- prepares a research batch
+- asks questions one at a time
+- tracks progress internally through hidden state
+- determines when enough context exists to move into UI work
 
-### Configuration Stage
+The research stage is intentionally separated from visual and technical implementation decisions.
 
-- PromptPal recommends the implementation setup after research and UI direction
-- the top section shows a compact summary of what the user has actually selected
-- each category can show up to three recommended options with hover explanations
-- recommended chips on the left are clickable
-- the full remaining option list stays visible on the right
-- users can select multiple options if they want to override the defaults
+### 3. UI stage
 
-### Prompt Stage
+Once research is complete, PromptPal helps define:
 
-- the final page shows a direct prompt preview
-- `Open full prompt` opens the complete document in a large modal
-- the prompt can be exported directly from the page
+- layout direction
+- logo placement
+- primary action placement
+- navigation style
+- design preferences
 
-## Runtime Model Note
+Those UI choices can then be locked into the evolving prompt.
 
-PromptPal currently uses **xAI Grok 4.20 non-reasoning** through the xAI API.
+### 4. Configuration stage
 
-The selectable tools shown in configuration, such as `Codex CLI`, `Cursor`, or `Claude Code`, are target execution workflows. They are not the backend runtime model used by this app.
+After the UI direction is set, PromptPal recommends implementation choices such as:
 
-## Hidden State Contract
+- execution agent
+- stack additions
+- database direction
+- hosting direction
 
-The `/api/chat` route returns visible chat text plus hidden metadata blocks that drive the workspace.
+Users can accept or override those recommendations before committing them into the final prompt.
 
-The frontend parses:
+### 5. Final prompt stage
+
+The prompt stage gives users:
+
+- an inline preview
+- a larger prompt modal
+- a live side drawer
+- direct Markdown export
+
+## Architecture Overview
+
+PromptPal uses a split between visible chat text and hidden structured metadata.
+
+The `/api/chat` route returns assistant output that includes hidden state blocks. The frontend parses those blocks to drive the workspace.
+
+### Hidden state blocks
 
 - `PROMPT_STATE`
 - `RECOMMENDATION_STATE`
 - `SESSION_STATE`
 
-Those hidden blocks power:
+These blocks power:
 
-- the live prompt draft
-- research progress and question sequencing
+- prompt drafting
+- question sequencing
+- stage unlocking
 - recommendation rendering
-- UI/configuration unlocking
-- final prompt readiness
+- prompt readiness and export state
 
-## Freshness and Recommendation Rules
+## Runtime Model
 
-- PromptPal uses maintained latest-stable defaults for framework and model examples
-- older defaults should not be emitted unless the user explicitly asks for them
-- research does not ask the user to choose a database vendor or hosting vendor directly
-- configuration recommendations are inferred from the researched product instead
-- recipe-style products are pushed toward pantry-first and leftover-first ranking rules when relevant
+PromptPal currently connects to xAI through the AI SDK:
+
+- provider base URL: `https://api.x.ai/v1`
+- required API key env var: `XAI_API_KEY`
+- default model: `grok-4.20-0309-non-reasoning`
+- optional model override env var: `GROK_MODEL`
+
+The selectable agents shown in the Configuration stage, such as Codex CLI or other build tools, are output recommendations for the final prompt. They are not the backend model running the app itself.
 
 ## Tech Stack
 
-- Next.js `16.1.6`
-- React `19`
+- Next.js 16
+- React 19
 - TypeScript
-- Tailwind CSS `4`
+- Tailwind CSS 4
 - shadcn/ui primitives
-- AI SDK: `ai`, `@ai-sdk/react`, `@ai-sdk/openai`
-- xAI API via OpenAI-compatible transport
-- React Markdown + GFM for prompt rendering
+- Vercel AI SDK (`ai`, `@ai-sdk/react`, `@ai-sdk/openai`)
+- React Markdown with `remark-gfm`
+- Lucide React icons
 
 ## Project Structure
 
 ```text
 app/
-  api/chat/route.ts            chat route, system prompt, hidden-state contract
-  chat/page.tsx                main multi-stage workspace
-  components/
-    ChatMessage.tsx            visible chat messages
-    LayoutSelector.tsx         UI layout selection
-    PromptModal.tsx            full prompt reading view
-    PromptPanel.tsx            live prompt drawer
-    ProgressTracker.tsx        step-path sidebar helpers
-    RecommendationPanel.tsx    configuration recommendations and overrides
-    ResearchPanel.tsx          compact research summary
-    StackSelector.tsx          stack selection helpers
-    ToolSelector.tsx           execution-tool selection helpers
-    TopologyBackground.tsx     landing page background
-  globals.css                  global styles
-  layout.tsx                   root layout
-  page.tsx                     landing page
-components/ui/                 shared UI primitives
+  page.tsx                 landing page
+  layout.tsx               app shell and metadata
+  globals.css              global styles
+  chat/page.tsx            main multi-stage workspace
+  api/chat/route.ts        model orchestration and hidden-state contract
+  components/              chat, layout, prompt, and recommendation UI
+
+components/ui/
+  ...                      shared shadcn/ui primitives
+
 lib/
-  current-defaults.ts          maintained framework and model defaults
-  prompt-catalog.ts            supported tool, stack, and layout presets
-  prompt-state.ts              hidden-state types and parsing
-  research-config.ts           quotas, budgets, and domain packs
-  utils.ts                     shared helpers
+  current-defaults.ts      maintained default framework/model guidance
+  prompt-catalog.ts        tool, stack, and layout presets
+  prompt-state.ts          hidden-state types and parsing
+  research-config.ts       research quotas and domain packs
+  utils.ts                 shared helpers
+
+public/
+  ...                      static assets
 ```
 
 ## Local Development
@@ -145,9 +156,9 @@ XAI_API_KEY=your_xai_api_key
 GROK_MODEL=grok-4.20-0309-non-reasoning
 ```
 
-`GROK_MODEL` is optional. If omitted, the app falls back to `grok-4.20-0309-non-reasoning`.
+`GROK_MODEL` is optional. If omitted, PromptPal falls back to `grok-4.20-0309-non-reasoning`.
 
-### 3. Start the app
+### 3. Start the dev server
 
 ```bash
 npm run dev
@@ -155,7 +166,7 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-On restricted Windows PowerShell setups:
+If PowerShell policy or shell behavior gets in the way on Windows, this fallback also works:
 
 ```bash
 cmd /c npm run dev
@@ -173,24 +184,44 @@ npm run lint
 Useful validation commands:
 
 ```bash
+npm run build
+npm run lint
 npm exec -- tsc --noEmit
-npm exec -- eslint app components lib --ext .ts,.tsx
 ```
 
-Windows fallback:
+Windows fallback examples:
 
 ```bash
-cmd /c npm exec -- tsc --noEmit
 cmd /c npm run build
+cmd /c npm run lint
+cmd /c npm exec -- tsc --noEmit
 ```
+
+## Current Behavior Notes
+
+- Research is batch-first: the backend prepares a full question batch, while the frontend reveals it one question at a time.
+- PromptPal keeps the final prompt live throughout the workflow instead of generating it only at the end.
+- Research avoids asking UI styling or vendor-picking questions too early; those are intentionally deferred to later stages.
+- The app includes domain-aware research behavior for food and recipe-style products.
 
 ## Current Scope
 
-PromptPal currently focuses on prompt creation and interview orchestration. It does not currently include:
+This repository is focused on prompt-building workflow and agent orchestration. It does not currently include:
 
 - user accounts
 - persistent server-side project storage
-- analytics
 - long-term project history
+- analytics dashboards
+- multi-user collaboration
 
-Most state is browser-side plus streamed hidden metadata from model responses.
+Most state is kept in the client plus streamed hidden metadata from the chat route.
+
+## Recommended Reading Order In The Codebase
+
+If you are new to the project, start here:
+
+1. `app/page.tsx` for the landing experience
+2. `app/chat/page.tsx` for the main workspace
+3. `app/api/chat/route.ts` for orchestration, prompt policy, and model calls
+4. `lib/prompt-state.ts` for the hidden-state contract
+5. `lib/prompt-catalog.ts` and `lib/research-config.ts` for presets and interview rules
